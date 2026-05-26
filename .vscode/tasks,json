@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "1. Menyalakan Docker Sandbox",
+      "type": "shell",
+      "command": "docker rm -f running-sandbox ; docker build -t vibe-sandbox -f dockerfile . ; docker run -it -d --rm -v \"${workspaceFolder}:/workspace\" -p 8080:8000 --name running-sandbox vibe-sandbox",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "2. Masuk ke Terminal Linux Terisolasi",
+      "type": "shell",
+      "command": "docker exec -it running-sandbox bash",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "dependsOn": "1. Menyalakan Docker Sandbox",
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}

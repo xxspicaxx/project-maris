@@ -1,0 +1,13 @@
+{
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-linux",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "docker rm -f running-sandbox ; docker build -t vibe-sandbox -f dockerfile . ; docker run -it -d --rm -v \"${workspaceFolder}:/workspace\" -p 8080:8000 --name running-sandbox vibe-sandbox ; docker exec -it running-sandbox bash"
+      ]
+    }
+  }
+}
