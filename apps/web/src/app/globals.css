@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary — Navy Maritime */
+    --color-primary-950: #0a0f1a;
+    --color-primary-900: #0d1526;
+    --color-primary-800: #112040;
+    --color-primary-700: #162d5a;
+    --color-primary-600: #1a3a73;
+    --color-primary-500: #1e4699;
+    --color-primary-400: #2563eb;
+    --color-primary-300: #60a5fa;
+    --color-primary-200: #bfdbfe;
+    --color-primary-100: #dbeafe;
+
+    /* Background */
+    --color-bg-canvas: #0f1623;
+    --color-bg-surface: #161f2e;
+    --color-bg-elevated: #1d2a3e;
+    --color-bg-overlay: #243452;
+
+    /* Borders */
+    --color-border-default: #243452;
+    --color-border-subtle: #1a2640;
+    --color-border-emphasis: #2563eb;
+
+    /* Text */
+    --color-text-primary: #e2e8f0;
+    --color-text-secondary: #94a3b8;
+    --color-text-tertiary: #64748b;
+    --color-text-disabled: #475569;
+
+    /* Status */
+    --color-status-valid: #22c55e;
+    --color-status-warning: #f59e0b;
+    --color-status-critical: #f97316;
+    --color-status-danger: #ef4444;
+    --color-status-info: #3b82f6;
+    --color-status-neutral: #64748b;
+
+    /* Vessel Status */
+    --color-vessel-active: #22c55e;
+    --color-vessel-drydock: #f59e0b;
+    --color-vessel-laidup: #94a3b8;
+    --color-vessel-scrapped: #64748b;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-[var(--color-border-default)];
+  }
+
+  body {
+    @apply bg-[var(--color-bg-canvas)] text-[var(--color-text-primary)];
+    font-family: "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-canvas);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-bg-overlay);
+}
+
+/* Data table dense scrollbar */
+.data-table-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}

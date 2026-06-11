@@ -1,13 +1,44 @@
 {
-  "terminal.integrated.profiles.windows": {
-    "PowerShell": {
-      "source": "PowerShell",
-      "icon": "terminal-linux",
-      "args": [
-        "-NoExit",
-        "-Command",
-        "docker rm -f running-sandbox ; docker build -t vibe-sandbox -f dockerfile . ; docker run -it -d --rm -v \"${workspaceFolder}:/workspace\" -p 8080:8000 --name running-sandbox vibe-sandbox ; docker exec -it running-sandbox bash"
-      ]
-    }
-  }
+  // Editor
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.rulers": [100],
+
+  // TypeScript
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.format.semicolons": "remove",
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  // Explorer
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.js, ${capture}.spec.ts, ${capture}.test.ts",
+    "*.tsx": "${capture}.ts, ${capture}.spec.tsx, ${capture}.test.tsx",
+    "package.json": "pnpm-lock.yaml, tsconfig.json, .eslintrc*, .prettierrc*, nest-cli.json, next.config.*, tailwind.config.*",
+    "prisma/schema.prisma": "prisma/*.prisma, prisma/seed.ts"
+  },
+
+  // Exclude
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/dist": true
+  },
+
+  // Terminal
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+
+  // ESLint
+  "eslint.validate": ["typescript", "typescriptreact"],
+  "eslint.workingDirectories": [
+    { "pattern": "./backend/src/" },
+    { "pattern": "./frontend/src/" }
+  ]
 }

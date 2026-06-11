@@ -1,0 +1,75 @@
+# Maritime Fleet ERP — AI Coding Rules
+
+# Entry point untuk Cursor AI
+
+## WAJIB DIBACA SEBELUM MENULIS KODE
+
+Kamu adalah senior engineer yang membangun Maritime Fleet ERP — sistem enterprise untuk manajemen armada kapal pelayaran Indonesia. Baca semua file di bawah ini sebelum menulis satu baris kode pun.
+
+---
+
+## Index Rules Files
+
+| #   | File                                 | Baca Kapan                            |
+| --- | ------------------------------------ | ------------------------------------- |
+| 01  | `ai-rules/01-project-overview.md`    | SELALU — konteks bisnis tertinggi     |
+| 02  | `ai-rules/02-architecture.md`        | Sebelum buat module/service baru      |
+| 03  | `ai-rules/03-tech-stack.md`          | Sebelum install library               |
+| 04  | `ai-rules/04-folder-structure.md`    | Sebelum buat file baru                |
+| 05  | `ai-rules/05-code-conventions.md`    | SELALU — setiap menulis kode          |
+| 06  | `ai-rules/06-api-design.md`          | Sebelum buat controller/endpoint      |
+| 07  | `ai-rules/07-database-schema.md`     | Sebelum buat/edit schema Prisma       |
+| 08  | `ai-rules/08-auth-rbac.md`           | Sebelum buat endpoint yang dilindungi |
+| 09  | `ai-rules/09-audit-trail.md`         | Sebelum buat write operation          |
+| 10  | `ai-rules/10-ui-design-system.md`    | Sebelum buat komponen UI              |
+| 11  | `ai-rules/11-domain-glossary.md`     | Saat ada istilah maritim baru         |
+| 12  | `ai-rules/12-maritime-compliance.md` | Sebelum buat compliance logic         |
+| 13  | `ai-rules/13-error-handling.md`      | Sebelum buat exception/error          |
+| 14  | `ai-rules/14-testing-strategy.md`    | Sebelum/saat buat implementasi        |
+| 15  | `ai-rules/15-scope-and-phases.md`    | Saat ada permintaan fitur baru        |
+
+---
+
+## Quick Rules (Tidak Boleh Dilanggar)
+
+1. **TypeScript strict** — tidak ada `any`, tidak ada `@ts-ignore`
+2. **No duplicate logic** — satu fungsi untuk satu logic
+3. **No magic strings** — semua konstanta di `@shared/constants`
+4. **RBAC always** — semua endpoint wajib `@Permissions()`
+5. **Audit always** — semua write wajib `@Audit()`
+6. **Test always** — setiap implementasi wajib ada test file-nya
+7. **companyId always** — semua query data tenant wajib filter `companyId`
+8. **Swagger always** — semua endpoint wajib `@ApiOperation()` + `@ApiResponse()`
+9. **Domain exception** — jangan throw generic `Error`, gunakan domain exceptions
+10. **Scope discipline** — jangan build fitur di luar phase aktif (lihat file 15)
+
+---
+
+## Stack Ringkas
+
+```
+Backend  : NestJS 10 + TypeScript strict
+Frontend : Next.js 14 App Router + TypeScript strict
+DB       : PostgreSQL + Prisma ORM
+Auth     : JWT (access 15m + refresh 7d httpOnly cookie)
+UI       : shadcn/ui + TailwindCSS (dark maritime theme)
+State    : Zustand (client) + React Query (server)
+Test     : Jest (unit + integration) + Playwright (E2E)
+```
+
+---
+
+## Arsitektur Ringkas
+
+```
+Domain Layer     ← Pure TypeScript, NO framework imports
+Application Layer ← Use cases, CQRS commands/queries
+Infrastructure   ← Prisma repos, external services
+Presentation     ← NestJS controllers, Next.js pages
+```
+
+Dependency flow: `Presentation → Application → Domain ← Infrastructure`
+
+---
+
+_Versi: 1.1.0 | Updated: Juni 2026_

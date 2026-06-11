@@ -1,0 +1,15 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/../src/$1",
+    "^@shared/(.*)$": "<rootDir>/../../packages/shared/src/$1",
+    "^@maris/shared/(.*)$": "<rootDir>/../../packages/shared/src/$1",
+    "^@maris/config/(.*)$": "<rootDir>/../../packages/config/src/$1"
+  }
+}
