@@ -1,4 +1,4 @@
-import { User, Role, UserRole } from "@prisma/client";
+import { type User, type Role, type UserRole } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 
 export function createMockUser(overrides?: Partial<User>): User {
@@ -31,7 +31,11 @@ export function createMockRole(overrides?: Partial<Role>): Role {
   };
 }
 
-export function createMockUserRole(userId: string, roleId: string, overrides?: Partial<UserRole>): UserRole {
+export function createMockUserRole(
+  userId: string,
+  roleId: string,
+  overrides?: Partial<UserRole>,
+): UserRole {
   return {
     id: uuidv4(),
     userId,

@@ -1,4 +1,4 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { Test, type TestingModule } from "@nestjs/testing";
 import { VesselService } from "../vessel.service";
 import { PrismaService } from "../../../../../shared/database/prisma.service";
 import { createMockVessel } from "../../../../../../test/factories/vessel.factory";
@@ -27,10 +27,7 @@ describe("VesselService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        VesselService,
-        { provide: PrismaService, useValue: mockPrismaService },
-      ],
+      providers: [VesselService, { provide: PrismaService, useValue: mockPrismaService }],
     }).compile();
 
     service = module.get<VesselService>(VesselService);
@@ -75,7 +72,7 @@ describe("VesselService", () => {
               { callSign: { contains: "nusantara", mode: "insensitive" } },
             ],
           }),
-        })
+        }),
       );
     });
   });
@@ -98,7 +95,7 @@ describe("VesselService", () => {
       prisma.vessel.findFirst.mockResolvedValue(null);
 
       await expect(service.findById("non-existent-id", "company-id")).rejects.toThrow(
-        VesselNotFoundException
+        VesselNotFoundException,
       );
     });
   });
@@ -118,7 +115,7 @@ describe("VesselService", () => {
           grossTonnage: mockVessel.grossTonnage.toNumber(),
         },
         mockVessel.companyId,
-        mockVessel.createdBy
+        mockVessel.createdBy,
       );
 
       expect(prisma.vessel.findUnique).toHaveBeenCalledWith({
@@ -142,8 +139,8 @@ describe("VesselService", () => {
             grossTonnage: mockVessel.grossTonnage.toNumber(),
           },
           mockVessel.companyId,
-          mockVessel.createdBy
-        )
+          mockVessel.createdBy,
+        ),
       ).rejects.toThrow(DuplicateImoNumberException);
 
       expect(prisma.vessel.create).not.toHaveBeenCalled();
@@ -160,7 +157,7 @@ describe("VesselService", () => {
         mockVessel.id,
         mockVessel.companyId,
         mockVessel.createdBy,
-        { name: "MV New Name" }
+        { name: "MV New Name" },
       );
 
       expect(prisma.vessel.update).toHaveBeenCalled();

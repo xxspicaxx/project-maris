@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../../shared/database/prisma.service";
+import { type Prisma, type VesselCertType, type CertificateStatus } from "@prisma/client";
+import { type PrismaService } from "../../../../shared/database/prisma.service";
 import {
   CertificateNotFoundException,
   VesselNotFoundException,
@@ -64,7 +65,7 @@ export class CertificateService {
       data: {
         vesselId: data.vesselId,
         companyId,
-        certificateType: data.certificateType as any,
+        certificateType: data.certificateType as VesselCertType,
         certificateNumber: data.certificateNumber,
         issuingAuthority: data.issuingAuthority,
         issueDate: new Date(data.issueDate),
@@ -99,15 +100,29 @@ export class CertificateService {
       throw new CertificateNotFoundException(certificateId);
     }
 
-    const updateData: any = { updatedBy: userId };
+    const updateData: Prisma.VesselCertificateUpdateInput = { updatedBy: userId };
 
-    if (data.certificateNumber !== undefined) updateData.certificateNumber = data.certificateNumber;
-    if (data.issuingAuthority !== undefined) updateData.issuingAuthority = data.issuingAuthority;
-    if (data.issueDate !== undefined) updateData.issueDate = new Date(data.issueDate);
-    if (data.expiryDate !== undefined) updateData.expiryDate = new Date(data.expiryDate);
-    if (data.documentUrl !== undefined) updateData.documentUrl = data.documentUrl;
-    if (data.notes !== undefined) updateData.notes = data.notes;
-    if (data.status !== undefined) updateData.status = data.status;
+    if (data.certificateNumber !== undefined) {
+      updateData.certificateNumber = data.certificateNumber;
+    }
+    if (data.issuingAuthority !== undefined) {
+      updateData.issuingAuthority = data.issuingAuthority;
+    }
+    if (data.issueDate !== undefined) {
+      updateData.issueDate = new Date(data.issueDate);
+    }
+    if (data.expiryDate !== undefined) {
+      updateData.expiryDate = new Date(data.expiryDate);
+    }
+    if (data.documentUrl !== undefined) {
+      updateData.documentUrl = data.documentUrl;
+    }
+    if (data.notes !== undefined) {
+      updateData.notes = data.notes;
+    }
+    if (data.status !== undefined) {
+      updateData.status = data.status as CertificateStatus;
+    }
 
     return this.prisma.vesselCertificate.update({
       where: { id: certificateId },
@@ -129,7 +144,7 @@ export class CertificateService {
     });
   }
 
-  async getExpiringCertificates(companyId: string, daysThreshold: number = 90) {
+  async getExpiringCertificates(companyId: string, daysThreshold = 90) {
     const now = new Date();
     const threshold = new Date(now.getTime() + daysThreshold * 24 * 60 * 60 * 1000);
 

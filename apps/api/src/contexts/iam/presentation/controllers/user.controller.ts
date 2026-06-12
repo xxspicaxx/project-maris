@@ -11,14 +11,17 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
+import { type Request } from "express";
 import { Audit as AuditLog } from "../../../../shared/decorators/audit.decorator";
-import { CurrentUser, RequestUser } from "../../../../shared/decorators/current-user.decorator";
+import {
+  CurrentUser,
+  type RequestUser,
+} from "../../../../shared/decorators/current-user.decorator";
 import { Permissions } from "../../../../shared/decorators/permissions.decorator";
 import { JwtAuthGuard } from "../../../../shared/guards/jwt-auth.guard";
 import { RbacGuard } from "../../../../shared/guards/rbac.guard";
 import { ApiResponseHelper } from "../../../../shared/utils/api-response.helper";
-import { UserService } from "../../application/services/user.service";
+import { type UserService } from "../../application/services/user.service";
 
 @ApiTags("System Admin — Users")
 @ApiBearerAuth()

@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 
 @Injectable()
@@ -36,9 +36,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     id: string,
   ): Promise<T> {
     return model.update({
-      where: { id } as any,
-      data: { deletedAt: new Date() } as any,
-    }) as Promise<T>;
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
   }
 
   /**

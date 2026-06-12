@@ -253,3 +253,40 @@ export class CreateCertificateDto {
   @IsString()
   notes?: string;
 }
+
+export class UpdateCertificateDto {
+  @ApiPropertyOptional({ description: "Nomor sertifikat" })
+  @IsOptional()
+  @IsString()
+  certificateNumber?: string;
+
+  @ApiPropertyOptional({ description: "Penerbit sertifikat" })
+  @IsOptional()
+  @IsString()
+  issuingAuthority?: string;
+
+  @ApiPropertyOptional({ description: "Tanggal terbit" })
+  @IsOptional()
+  @IsString()
+  issueDate?: string;
+
+  @ApiPropertyOptional({ description: "Tanggal kadaluarsa" })
+  @IsOptional()
+  @IsString()
+  expiryDate?: string;
+
+  @ApiPropertyOptional({ description: "URL dokumen sertifikat" })
+  @IsOptional()
+  @IsString()
+  documentUrl?: string;
+
+  @ApiPropertyOptional({ description: "Catatan" })
+  @IsOptional()
+  @IsString()
+  notes?: string;
+
+  @ApiPropertyOptional({ description: "Status sertifikat" })
+  @IsOptional()
+  @IsString()
+  status?: string;
+}

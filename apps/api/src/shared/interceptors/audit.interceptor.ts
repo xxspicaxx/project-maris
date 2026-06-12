@@ -1,9 +1,16 @@
-import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { AuditAction } from "@prisma/client";
-import { Observable, tap } from "rxjs";
-import { PrismaService } from "../database/prisma.service";
-import { AUDIT_KEY, AuditConfig } from "../decorators/audit.decorator";
+import {
+  type CallHandler,
+  type ExecutionContext,
+  Injectable,
+  Logger,
+  type NestInterceptor,
+} from "@nestjs/common";
+import { type Reflector } from "@nestjs/core";
+import { AuditAction, type Prisma } from "@prisma/client";
+import { type Request } from "express";
+import { type Observable, tap } from "rxjs";
+import { type PrismaService } from "../database/prisma.service";
+import { AUDIT_KEY, type AuditConfig } from "../decorators/audit.decorator";
 
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
@@ -15,8 +22,8 @@ export class AuditInterceptor implements NestInterceptor {
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    const request = context.switchToHttp().getRequest<Request>();
+    const user = (request as Request & { user?: { companyId: string; userId: string } }).user;
 
     // Skip for GET requests or if no user
     if (request.method === "GET" || !user) {
@@ -32,13 +39,17 @@ export class AuditInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap({
-        next: async (response: any) => {
+        next: async (response: unknown) => {
           try {
             const resourceId = this.extractResourceId(request, response);
-            if (!resourceId) return;
+            if (!resourceId) {
+              return;
+            }
 
-            const newValues = response?.data ? this.sanitize(response.data) : undefined;
-            const oldValues = auditConfig.captureOld ? request["_oldValues"] : undefined;
+            const responseObj = response as { data?: unknown } | null | undefined;
+            const newValues = responseObj?.data ? this.sanitize(responseObj.data) : undefined;
+            const customReq = request as Request & { _oldValues?: unknown };
+            const oldValues = auditConfig.captureOld ? customReq._oldValues : undefined;
 
             await this.prisma.auditLog.create({
               data: {
@@ -47,8 +58,8 @@ export class AuditInterceptor implements NestInterceptor {
                 action: this.mapMethodToAction(request.method),
                 resource: auditConfig.resource,
                 resourceId,
-                oldValues: oldValues ? (oldValues as any) : undefined,
-                newValues: newValues ? (newValues as any) : undefined,
+                oldValues: oldValues ? (oldValues as Prisma.InputJsonValue) : undefined,
+                newValues: newValues ? (newValues as Prisma.InputJsonValue) : undefined,
                 ipAddress: request.ip,
                 userAgent: request.headers["user-agent"] as string,
                 requestId: request.headers["x-request-id"] as string,
@@ -75,29 +86,42 @@ export class AuditInterceptor implements NestInterceptor {
     return map[method] ?? AuditAction.UPDATE;
   }
 
-  private extractResourceId(request: any, response: any): string | undefined {
+  private extractResourceId(request: Request, response: unknown): string | undefined {
     // First try from URL params
+    const params = request.params || {};
     const paramId =
-      request.params?.vesselId ||
-      request.params?.seafarerId ||
-      request.params?.voyageId ||
-      request.params?.companyId ||
-      request.params?.userId ||
-      request.params?.certificateId ||
-      request.params?.documentId ||
-      request.params?.id;
+      params.vesselId ||
+      params.seafarerId ||
+      params.voyageId ||
+      params.companyId ||
+      params.userId ||
+      params.certificateId ||
+      params.documentId ||
+      params.id;
 
-    if (paramId) return paramId;
+    if (paramId) {
+      return paramId;
+    }
 
     // Then try from response data
-    if (response?.data?.id) return response.data.id;
-    if (response?.data?.vesselId) return response.data.vesselId;
+    const responseObj = response as
+      | { data?: { id?: string; vesselId?: string } }
+      | null
+      | undefined;
+    if (responseObj?.data?.id) {
+      return responseObj.data.id;
+    }
+    if (responseObj?.data?.vesselId) {
+      return responseObj.data.vesselId;
+    }
 
     return undefined;
   }
 
   private sanitize(data: unknown): unknown {
-    if (!data || typeof data !== "object") return data;
+    if (!data || typeof data !== "object") {
+      return data;
+    }
 
     const sanitized = { ...(data as Record<string, unknown>) };
     const sensitiveFields = [
@@ -110,6 +134,7 @@ export class AuditInterceptor implements NestInterceptor {
     ];
 
     for (const field of sensitiveFields) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete sanitized[field];
     }
 

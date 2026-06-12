@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { type Request } from "express";
 import { v4 as uuid } from "uuid";
 
 export interface PaginationMeta {
@@ -41,7 +41,7 @@ export class ApiResponseHelper {
     data: T,
     message: string,
     request?: Request,
-    statusCode?: number,
+    _statusCode?: number,
   ): ApiResponse<T> {
     return {
       success: true,

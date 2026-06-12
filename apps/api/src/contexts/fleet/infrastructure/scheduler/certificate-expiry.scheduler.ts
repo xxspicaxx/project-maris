@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { PrismaService } from "../../../../shared/database/prisma.service";
+import { type CertificateStatus } from "@prisma/client";
+import { type PrismaService } from "../../../../shared/database/prisma.service";
 
 @Injectable()
 export class CertificateExpiryScheduler {
@@ -68,7 +69,7 @@ export class CertificateExpiryScheduler {
         if (newStatus && newStatus !== cert.status) {
           await this.prisma.vesselCertificate.update({
             where: { id: cert.id },
-            data: { status: newStatus as any },
+            data: { status: newStatus as CertificateStatus },
           });
 
           this.logger.log(

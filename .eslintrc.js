@@ -34,6 +34,13 @@ module.exports = {
         fixStyle: "inline-type-imports",
       },
     ],
+    "@typescript-eslint/no-extraneous-class": [
+      "error",
+      {
+        allowWithDecorator: true,
+        allowStaticOnly: true,
+      },
+    ],
     "no-console": ["warn", { allow: ["warn", "error"] }],
     "no-duplicate-imports": "error",
     eqeqeq: ["error", "always"],
@@ -41,6 +48,15 @@ module.exports = {
     "no-throw-literal": "error",
     "prefer-const": "error",
   },
+  overrides: [
+    {
+      files: ["**/*.spec.ts", "**/__tests__/**/*.ts", "test/**/*.ts"],
+      rules: {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+      },
+    },
+  ],
   ignorePatterns: [
     "dist",
     "build",

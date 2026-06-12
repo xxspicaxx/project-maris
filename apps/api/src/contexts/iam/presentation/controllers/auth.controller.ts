@@ -1,8 +1,11 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
-import { Request } from "express";
-import { CurrentUser, RequestUser } from "../../../../shared/decorators/current-user.decorator";
+import { type Request } from "express";
+import {
+  CurrentUser,
+  type RequestUser,
+} from "../../../../shared/decorators/current-user.decorator";
 import { JwtAuthGuard } from "../../../../shared/guards/jwt-auth.guard";
 import { ApiResponseHelper } from "../../../../shared/utils/api-response.helper";
 import {
@@ -13,7 +16,7 @@ import {
   RegisterUserDto,
   ResetPasswordDto,
 } from "../../application/dtos/auth.dto";
-import { AuthService } from "../../application/services/auth.service";
+import { type AuthService } from "../../application/services/auth.service";
 
 @ApiTags("Auth")
 @Controller("auth")

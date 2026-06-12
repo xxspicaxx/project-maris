@@ -1,4 +1,10 @@
-import { Vessel, VesselCertificate, VesselType, VesselStatus, FuelType } from "@prisma/client";
+import {
+  type Vessel,
+  type VesselCertificate,
+  VesselType,
+  VesselStatus,
+  FuelType,
+} from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { v4 as uuidv4 } from "uuid";
 
@@ -38,7 +44,10 @@ export function createMockVessel(overrides?: Partial<Vessel>): Vessel {
   };
 }
 
-export function createMockCertificate(vesselId: string, overrides?: Partial<VesselCertificate>): VesselCertificate {
+export function createMockCertificate(
+  vesselId: string,
+  overrides?: Partial<VesselCertificate>,
+): VesselCertificate {
   return {
     id: uuidv4(),
     companyId: uuidv4(),

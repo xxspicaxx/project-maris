@@ -15,23 +15,34 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiBearerAuth, ApiConsumes, ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
+import { type Request } from "express";
 import { Audit } from "../../../../shared/decorators/audit.decorator";
-import { CurrentUser, RequestUser } from "../../../../shared/decorators/current-user.decorator";
+import {
+  CurrentUser,
+  type RequestUser,
+} from "../../../../shared/decorators/current-user.decorator";
 import { Permissions } from "../../../../shared/decorators/permissions.decorator";
 import { JwtAuthGuard } from "../../../../shared/guards/jwt-auth.guard";
 import { RbacGuard } from "../../../../shared/guards/rbac.guard";
 import { ApiResponseHelper } from "../../../../shared/utils/api-response.helper";
-import { StorageService } from "../../../../shared/storage/storage.service";
+import { type StorageService } from "../../../../shared/storage/storage.service";
 import {
-  CreateCertificateDto,
-  CreateVesselDto,
-  ListVesselsQueryDto,
-  UpdateVesselDto,
+  type CreateCertificateDto,
+  type CreateVesselDto,
+  type ListVesselsQueryDto,
+  type UpdateVesselDto,
+  type UpdateCertificateDto,
 } from "../../application/dtos/vessel.dto";
-import { CertificateService } from "../../application/services/certificate.service";
-import { VesselService } from "../../application/services/vessel.service";
+import { type CertificateService } from "../../application/services/certificate.service";
+import { type VesselService } from "../../application/services/vessel.service";
 
 @ApiTags("Fleet — Vessels")
 @ApiBearerAuth()
@@ -56,7 +67,7 @@ export class VesselController {
     @CurrentUser() user: RequestUser,
     @Req() request: Request,
   ) {
-    const vessel = await this.vesselService.create(dto as any, user.companyId, user.userId);
+    const vessel = await this.vesselService.create(dto, user.companyId, user.userId);
     return ApiResponseHelper.created(vessel, "Kapal berhasil diregistrasi", request);
   }
 
@@ -185,7 +196,7 @@ export class VesselController {
   @ApiOperation({ summary: "Update sertifikat kapal" })
   async updateCertificate(
     @Param("certificateId", ParseUUIDPipe) certificateId: string,
-    @Body() dto: any,
+    @Body() dto: UpdateCertificateDto,
     @CurrentUser() user: RequestUser,
     @Req() request: Request,
   ) {

@@ -1,0 +1,6 @@
+export enum CompanyType {
+  SHIP_OWNER = "SHIP_OWNER",
+  SHIP_MANAGER = "SHIP_MANAGER",
+  CHARTERER = "CHARTERER",
+  HOLDING = "HOLDING",
+}

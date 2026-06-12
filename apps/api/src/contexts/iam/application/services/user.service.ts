@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../../shared/database/prisma.service";
+import { type PrismaService } from "../../../../shared/database/prisma.service";
 import { UserNotFoundException } from "../../domain/exceptions/user-not-found.exception";
 
 @Injectable()

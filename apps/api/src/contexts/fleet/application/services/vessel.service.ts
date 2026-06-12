@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../../shared/database/prisma.service";
+import { type Prisma, type FuelType, type VesselStatus, type VesselType } from "@prisma/client";
+import { type PrismaService } from "../../../../shared/database/prisma.service";
 import { ApiResponseHelper } from "../../../../shared/utils/api-response.helper";
 import {
   DuplicateImoNumberException,
@@ -26,13 +27,13 @@ export class VesselService {
     const limit = query.limit || 20;
     const skip = (page - 1) * limit;
 
-    const where: any = {
+    const where: Prisma.VesselWhereInput = {
       companyId,
       deletedAt: null,
     };
 
     if (query.status) {
-      where.status = query.status;
+      where.status = query.status as VesselStatus;
     }
 
     if (query.flagState) {
@@ -143,11 +144,33 @@ export class VesselService {
 
     return this.prisma.vessel.create({
       data: {
-        ...data,
+        imoNumber: data.imoNumber,
+        mmsiNumber: data.mmsiNumber,
+        name: data.name,
+        formerNames: data.formerNames,
+        callSign: data.callSign,
+        flagState: data.flagState,
+        portOfRegistry: data.portOfRegistry,
+        vesselType: data.vesselType as VesselType,
+        status: data.status ? (data.status as VesselStatus) : undefined,
+        grossTonnage: data.grossTonnage,
+        netTonnage: data.netTonnage,
+        deadweightTonnage: data.deadweightTonnage,
+        lengthOverall: data.lengthOverall,
+        breadth: data.breadth,
+        depth: data.depth,
+        yearBuilt: data.yearBuilt,
+        shipyard: data.shipyard,
+        shipyardCountry: data.shipyardCountry,
+        classNumber: data.classNumber,
+        classSociety: data.classSociety,
+        mainEngineType: data.mainEngineType,
+        mainEnginePower: data.mainEnginePower,
+        fuelType: data.fuelType ? (data.fuelType as FuelType) : undefined,
         companyId,
         createdBy: userId,
         updatedBy: userId,
-      } as any,
+      },
     });
   }
 
@@ -175,9 +198,14 @@ export class VesselService {
     return this.prisma.vessel.update({
       where: { id: vesselId },
       data: {
-        ...data,
+        name: data.name,
+        callSign: data.callSign,
+        flagState: data.flagState,
+        portOfRegistry: data.portOfRegistry,
+        status: data.status ? (data.status as VesselStatus) : undefined,
+        classSociety: data.classSociety,
         updatedBy: userId,
-      } as any,
+      },
     });
   }
 
@@ -193,7 +221,7 @@ export class VesselService {
     return this.prisma.vessel.update({
       where: { id: vesselId },
       data: {
-        status: status as any,
+        status: status as VesselStatus,
         updatedBy: userId,
       },
     });

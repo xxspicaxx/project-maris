@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
+import { type ConfigService } from "@nestjs/config";
+import { type JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { PrismaService } from "../../../../shared/database/prisma.service";
+import { type PrismaService } from "../../../../shared/database/prisma.service";
 import {
   AccountDisabledException,
   InvalidCredentialsException,
@@ -397,7 +397,11 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    const decoded = this.jwtService.decode(token) as { sub: string; email: string; type: string } | null;
+    const decoded = this.jwtService.decode(token) as {
+      sub: string;
+      email: string;
+      type: string;
+    } | null;
     if (!decoded || decoded.type !== "password-reset") {
       throw new InvalidCredentialsException();
     }
@@ -416,7 +420,7 @@ export class AuthService {
 
     try {
       this.jwtService.verify(token, { secret });
-    } catch (err) {
+    } catch {
       throw new InvalidCredentialsException();
     }
 

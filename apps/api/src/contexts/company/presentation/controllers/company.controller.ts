@@ -10,15 +10,19 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
+import { type Request } from "express";
 import { Audit } from "../../../../shared/decorators/audit.decorator";
 import { Permissions } from "../../../../shared/decorators/permissions.decorator";
 import { JwtAuthGuard } from "../../../../shared/guards/jwt-auth.guard";
 import { RbacGuard } from "../../../../shared/guards/rbac.guard";
 import { CompanyIsolationGuard } from "../../../../shared/guards/company-isolation.guard";
 import { ApiResponseHelper } from "../../../../shared/utils/api-response.helper";
-import { CreateCompanyDto, UpdateCompanyDto, UpdateCompanySettingsDto } from "../../application/dtos/company.dto";
-import { CompanyService } from "../../application/services/company.service";
+import {
+  type CreateCompanyDto,
+  type UpdateCompanyDto,
+  type UpdateCompanySettingsDto,
+} from "../../application/dtos/company.dto";
+import { type CompanyService } from "../../application/services/company.service";
 
 @ApiTags("Company Admin")
 @ApiBearerAuth()

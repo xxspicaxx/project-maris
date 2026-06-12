@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../../shared/database/prisma.service";
+import { type PrismaService } from "../../../../shared/database/prisma.service";
 import {
   CompanyCodeExistsException,
   CompanyNotFoundException,
@@ -156,12 +156,15 @@ export class CompanyService {
     };
 
     return {
-      ...(defaultSettings),
-      ...(company.settings as Record<string, any> || {}),
+      ...defaultSettings,
+      ...((company.settings as Record<string, unknown>) || {}),
     };
   }
 
-  async updateSettings(companyId: string, settingsData: { timezone?: string; currency?: string; language?: string }) {
+  async updateSettings(
+    companyId: string,
+    settingsData: { timezone?: string; currency?: string; language?: string },
+  ) {
     const company = await this.prisma.company.findUnique({
       where: { id: companyId },
     });
@@ -170,7 +173,7 @@ export class CompanyService {
       throw new CompanyNotFoundException(companyId);
     }
 
-    const currentSettings = (company.settings as Record<string, any>) || {};
+    const currentSettings = (company.settings as Record<string, unknown>) || {};
     const updatedSettings = {
       ...currentSettings,
       ...settingsData,

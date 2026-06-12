@@ -1,4 +1,4 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { Test, type TestingModule } from "@nestjs/testing";
 import { AuthService } from "../auth.service";
 import { PrismaService } from "../../../../../shared/database/prisma.service";
 import { JwtService } from "@nestjs/jwt";
@@ -98,7 +98,7 @@ describe("AuthService", () => {
           firstName: mockUser.firstName,
           lastName: mockUser.lastName,
           companyId: mockUser.companyId,
-        })
+        }),
       ).rejects.toThrow(UserEmailExistsException);
 
       expect(prisma.user.create).not.toHaveBeenCalled();
@@ -166,7 +166,7 @@ describe("AuthService", () => {
       prisma.user.findUnique.mockResolvedValue(null);
 
       await expect(service.login("test@email.com", "Password")).rejects.toThrow(
-        InvalidCredentialsException
+        InvalidCredentialsException,
       );
     });
 
@@ -175,7 +175,7 @@ describe("AuthService", () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
 
       await expect(service.login(mockUser.email, "Password")).rejects.toThrow(
-        AccountDisabledException
+        AccountDisabledException,
       );
     });
 
@@ -186,7 +186,7 @@ describe("AuthService", () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
 
       await expect(service.login(mockUser.email, "wrong-password")).rejects.toThrow(
-        InvalidCredentialsException
+        InvalidCredentialsException,
       );
     });
   });

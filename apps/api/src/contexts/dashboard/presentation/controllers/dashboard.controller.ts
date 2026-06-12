@@ -1,10 +1,13 @@
 import { Controller, Get, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
-import { CurrentUser, RequestUser } from "../../../../shared/decorators/current-user.decorator";
+import { type Request } from "express";
+import {
+  CurrentUser,
+  type RequestUser,
+} from "../../../../shared/decorators/current-user.decorator";
 import { JwtAuthGuard } from "../../../../shared/guards/jwt-auth.guard";
 import { ApiResponseHelper } from "../../../../shared/utils/api-response.helper";
-import { DashboardService } from "../../application/services/dashboard.service";
+import { type DashboardService } from "../../application/services/dashboard.service";
 
 @ApiTags("Dashboard")
 @ApiBearerAuth()

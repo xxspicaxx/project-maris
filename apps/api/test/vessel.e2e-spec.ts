@@ -1,5 +1,5 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { INestApplication, CanActivate, ExecutionContext } from "@nestjs/common";
+import { Test, type TestingModule } from "@nestjs/testing";
+import { type INestApplication, type CanActivate, type ExecutionContext } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { VesselService } from "../src/contexts/fleet/application/services/vessel.service";
@@ -23,7 +23,7 @@ class MockJwtAuthGuard implements CanActivate {
 
 describe("VesselController (E2E/Integration)", () => {
   let app: INestApplication;
-  let mockVesselService = {
+  const mockVesselService = {
     create: jest.fn(),
     findAll: jest.fn(),
     findById: jest.fn(),
@@ -59,9 +59,7 @@ describe("VesselController (E2E/Integration)", () => {
         meta: { total: 2, page: 1, limit: 10, totalPages: 1 },
       });
 
-      const res = await request(app.getHttpServer())
-        .get("/api/v1/vessels")
-        .expect(200);
+      const res = await request(app.getHttpServer()).get("/api/v1/vessels").expect(200);
 
       expect(res.body.success).toBe(true);
       expect(res.body.data).toHaveLength(2);

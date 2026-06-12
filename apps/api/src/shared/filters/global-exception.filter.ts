@@ -1,12 +1,12 @@
 import {
-  ArgumentsHost,
+  type ArgumentsHost,
   BadRequestException,
   Catch,
-  ExceptionFilter,
+  type ExceptionFilter,
   HttpException,
   Logger,
 } from "@nestjs/common";
-import { Request, Response } from "express";
+import { type Request, type Response } from "express";
 import { DomainException } from "../exceptions/base.exception";
 
 interface ValidationErrorItem {
@@ -38,7 +38,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           requestId,
           path: request.url,
           method: request.method,
-          userId: (request as any).user?.userId,
+          userId: (request as Request & { user?: { userId: string } }).user?.userId,
         },
         exception instanceof Error ? exception.stack : undefined,
       );
@@ -73,12 +73,16 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     // NestJS validation pipe errors
     if (exception instanceof BadRequestException) {
-      const response = exception.getResponse() as any;
+      const response = exception.getResponse() as string | { message?: string | string[] };
+      const message =
+        typeof response === "object" && response !== null && response.message
+          ? response.message
+          : (response as string);
       return {
         status: 400,
         code: "VALIDATION_ERROR",
         message: "Data yang dikirim tidak valid",
-        details: this.formatValidationErrors(response.message),
+        details: this.formatValidationErrors(message),
       };
     }
 
