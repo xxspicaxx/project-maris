@@ -26,7 +26,9 @@ async function bootstrap() {
   });
 
   // Global prefix
-  app.setGlobalPrefix("api/v1");
+  app.setGlobalPrefix("api/v1", {
+    exclude: ["health"],
+  });
 
   // Global validation pipe
   app.useGlobalPipes(
@@ -53,7 +55,10 @@ async function bootstrap() {
 
   const port = process.env.PORT || 4000;
   await app.listen(port);
-  Logger.log(`🚀 API running on http://localhost:${port}/api/v1 (VesselStatus: ${VesselStatus.ACTIVE})`, "Bootstrap");
+  Logger.log(
+    `🚀 API running on http://localhost:${port}/api/v1 (VesselStatus: ${VesselStatus.ACTIVE})`,
+    "Bootstrap",
+  );
   Logger.log(`📖 Swagger docs at http://localhost:${port}/api/docs`, "Bootstrap");
 }
 

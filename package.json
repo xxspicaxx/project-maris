@@ -10,7 +10,11 @@
   "packageManager": "pnpm@8.15.9",
   "scripts": {
     "dev": "turbo run dev --parallel",
+    "dev:api": "pnpm --filter @maris/api dev",
+    "dev:web": "pnpm --filter @maris/web dev",
     "build": "turbo run build",
+    "build:api": "pnpm --filter @maris/api build",
+    "build:web": "pnpm --filter @maris/web build",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",

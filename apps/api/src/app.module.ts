@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { type MiddlewareConsumer, Module, type NestModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { EventEmitterModule } from "@nestjs/event-emitter";
@@ -13,6 +13,7 @@ import { GlobalExceptionFilter } from "./shared/filters/global-exception.filter"
 import { AuditInterceptor } from "./shared/interceptors/audit.interceptor";
 import { RequestIdMiddleware } from "./shared/middleware/request-id.middleware";
 import { StorageModule } from "./shared/storage/storage.module";
+import { HealthController } from "./health.controller";
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { StorageModule } from "./shared/storage/storage.module";
     DashboardModule,
     StorageModule,
   ],
+  controllers: [HealthController],
   providers: [
     PrismaService,
     {

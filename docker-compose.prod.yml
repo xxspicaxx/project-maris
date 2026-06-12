@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  postgres:
+    ports: []
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  redis:
+    ports: []
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  minio:
+    ports: []
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  mailhog:
+    scale: 0
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+      target: production
+    volumes: []
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+      target: production
+    volumes: []
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  nginx:
+    ports:
+      - "80:80"
+      - "443:443"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
