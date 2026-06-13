@@ -1,10 +1,11 @@
+/* eslint-disable no-console */
 import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log("🌱 Starting seed...");
+async function main(): Promise<void> {
+  console.log("Starting seed...");
 
   // ─── DEFAULT PERMISSIONS ──────────────────────────────────
   console.log("Creating default permissions...");
