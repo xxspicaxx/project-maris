@@ -3,4 +3,4 @@
  */
 
 // Placeholder component
-export const ButtonPlaceholder = () => null;
+export const ButtonPlaceholder = (): null => null;

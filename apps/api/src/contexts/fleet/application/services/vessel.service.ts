@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { type Prisma, type FuelType, type VesselStatus, type VesselType } from "@prisma/client";
-import { type PrismaService } from "../../../../shared/database/prisma.service";
+
+import { PrismaService } from "../../../../shared/database/prisma.service";
 import { ApiResponseHelper } from "../../../../shared/utils/api-response.helper";
 import {
   DuplicateImoNumberException,

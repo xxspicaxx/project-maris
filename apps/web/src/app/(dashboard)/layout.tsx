@@ -1,12 +1,17 @@
 "use client";
 
-import { Sidebar } from "@/components/layout/sidebar";
-import { Topbar } from "@/components/layout/topbar";
-import { useAuthStore } from "@/stores/auth.store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+import { Sidebar } from "@/components/layout/sidebar";
+import { Topbar } from "@/components/layout/topbar";
+import { useAuthStore } from "@/stores/auth.store";
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.JSX.Element | null {
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
 

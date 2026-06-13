@@ -1,7 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { type CertificateStatus } from "@prisma/client";
-import { type PrismaService } from "../../../../shared/database/prisma.service";
+
+import { PrismaService } from "../../../../shared/database/prisma.service";
 
 @Injectable()
 export class CertificateExpiryScheduler {

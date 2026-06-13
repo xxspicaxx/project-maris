@@ -94,7 +94,7 @@ Langkah yang harus dilakukan:
    - Cara apply di production (prisma migrate deploy)
 
 4. Setup Prisma service untuk NestJS di apps/api/src/shared/database/:
-   
+
    File: prisma.service.ts
    - Extends PrismaClient
    - Implements OnModuleInit (prisma.$connect())

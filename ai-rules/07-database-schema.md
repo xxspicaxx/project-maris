@@ -7,6 +7,7 @@
 ## 7.1 Prisma Schema Conventions
 
 ### Base Fields (Wajib di setiap tabel utama)
+
 ```prisma
 model AnyMainTable {
   // Identity
@@ -29,6 +30,7 @@ model AnyMainTable {
 ```
 
 ### Index Conventions
+
 ```prisma
 // Selalu index companyId + field yang sering di-query bersama
 @@index([companyId, status])
@@ -540,6 +542,7 @@ npx prisma migrate dev --name add_vessel_fuel_type
 ```
 
 **Seed data wajib ada untuk:**
+
 - Default roles & permissions
 - Sample companies (2)
 - Sample vessels (5 per company)
@@ -548,4 +551,4 @@ npx prisma migrate dev --name add_vessel_fuel_type
 
 ---
 
-*Schema ini adalah source of truth untuk database. Semua perubahan harus melalui Prisma migration — jangan edit database langsung.*
+_Schema ini adalah source of truth untuk database. Semua perubahan harus melalui Prisma migration — jangan edit database langsung._

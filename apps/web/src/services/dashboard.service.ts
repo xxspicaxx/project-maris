@@ -37,21 +37,21 @@ export interface AlertPanel {
 }
 
 export const dashboardService = {
-  getFleetOverview: async () => {
+  getFleetOverview: async (): Promise<FleetOverview> => {
     const response = (await apiClient.get(
       "/dashboard/fleet-overview",
     )) as unknown as ApiResponse<FleetOverview>;
     return response.data;
   },
 
-  getCertificateSummary: async () => {
+  getCertificateSummary: async (): Promise<CertificateSummary> => {
     const response = (await apiClient.get(
       "/dashboard/certificate-summary",
     )) as unknown as ApiResponse<CertificateSummary>;
     return response.data;
   },
 
-  getAlertPanel: async () => {
+  getAlertPanel: async (): Promise<AlertPanel> => {
     const response = (await apiClient.get(
       "/dashboard/alert-panel",
     )) as unknown as ApiResponse<AlertPanel>;

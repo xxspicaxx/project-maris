@@ -1,10 +1,11 @@
-import { Test, type TestingModule } from "@nestjs/testing";
 import { type INestApplication, type CanActivate, type ExecutionContext } from "@nestjs/common";
-import * as request from "supertest";
+import { Test, type TestingModule } from "@nestjs/testing";
+import request from "supertest";
+
 import { AppModule } from "../src/app.module";
+import { createMockVessel } from "./factories/vessel.factory";
 import { VesselService } from "../src/contexts/fleet/application/services/vessel.service";
 import { JwtAuthGuard } from "../src/shared/guards/jwt-auth.guard";
-import { createMockVessel } from "./factories/vessel.factory";
 
 class MockJwtAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {

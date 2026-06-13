@@ -1,21 +1,33 @@
 "use client";
 
-import { fleetService } from "@/services/fleet.service";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationResult,
+  type UseQueryResult,
+} from "@tanstack/react-query";
+
+import {
+  fleetService,
+  type Vessel,
+  type VesselCertificate,
+  type PaginationMeta,
+} from "@/services/fleet.service";
 
 export function useVessels(params?: {
   page?: number;
   limit?: number;
   status?: string;
   search?: string;
-}) {
+}): UseQueryResult<{ data: Vessel[]; meta?: PaginationMeta }, Error> {
   return useQuery({
     queryKey: ["vessels", params],
     queryFn: () => fleetService.getVessels(params),
   });
 }
 
-export function useVessel(vesselId: string) {
+export function useVessel(vesselId: string): UseQueryResult<Vessel, Error> {
   return useQuery({
     queryKey: ["vessel", vesselId],
     queryFn: () => fleetService.getVessel(vesselId),
@@ -23,7 +35,7 @@ export function useVessel(vesselId: string) {
   });
 }
 
-export function useCreateVessel() {
+export function useCreateVessel(): UseMutationResult<Vessel, Error, Record<string, unknown>> {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Record<string, unknown>) => fleetService.createVessel(data),
@@ -33,7 +45,11 @@ export function useCreateVessel() {
   });
 }
 
-export function useUpdateVessel() {
+export function useUpdateVessel(): UseMutationResult<
+  Vessel,
+  Error,
+  { vesselId: string; data: Record<string, unknown> }
+> {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ vesselId, data }: { vesselId: string; data: Record<string, unknown> }) =>
@@ -44,7 +60,7 @@ export function useUpdateVessel() {
   });
 }
 
-export function useDeleteVessel() {
+export function useDeleteVessel(): UseMutationResult<void, Error, string> {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (vesselId: string) => fleetService.deleteVessel(vesselId),
@@ -54,7 +70,11 @@ export function useDeleteVessel() {
   });
 }
 
-export function useUpdateVesselStatus() {
+export function useUpdateVesselStatus(): UseMutationResult<
+  Vessel,
+  Error,
+  { vesselId: string; status: string }
+> {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ vesselId, status }: { vesselId: string; status: string }) =>
@@ -65,7 +85,9 @@ export function useUpdateVesselStatus() {
   });
 }
 
-export function useVesselCertificates(vesselId: string) {
+export function useVesselCertificates(
+  vesselId: string,
+): UseQueryResult<VesselCertificate[], Error> {
   return useQuery({
     queryKey: ["vessel-certificates", vesselId],
     queryFn: () => fleetService.getVesselCertificates(vesselId),
@@ -73,7 +95,11 @@ export function useVesselCertificates(vesselId: string) {
   });
 }
 
-export function useCreateCertificate() {
+export function useCreateCertificate(): UseMutationResult<
+  VesselCertificate,
+  Error,
+  { vesselId: string; data: Record<string, unknown> }
+> {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ vesselId, data }: { vesselId: string; data: Record<string, unknown> }) =>

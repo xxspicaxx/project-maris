@@ -165,7 +165,7 @@ BUAT STRUKTUR LENGKAP:
    - audit.service.ts
      log(data: CreateAuditLogDto): Promise<void>
      getHistory(resource, resourceId, companyId): Promise<AuditLog[]>
-     
+
    - notification.service.ts (stub dulu — Phase 2)
      sendEmail(): Promise<void>  ← Log ke console untuk sekarang
 
@@ -274,21 +274,21 @@ File: apps/api/src/shared/storage/
 
 1. storage.service.ts
    Inject MinIO client (minio npm package)
-   
+
    Methods:
    uploadFile(file: Express.Multer.File, folder: string): Promise<UploadResult>
      - Generate unique filename: {folder}/{yyyy-mm}/{uuid}.{ext}
      - Upload ke MinIO bucket
      - Return: { fileUrl, fileName, fileSize, mimeType }
-   
+
    deleteFile(fileUrl: string): Promise<void>
-   
+
    getSignedUrl(fileUrl: string, expiresIn?: number): Promise<string>
      - Untuk private documents, generate presigned URL (default 1 jam)
-   
+
    validateFileType(mimeType: string, allowedTypes: string[]): void
      - Throw DOCUMENT_TYPE_NOT_ALLOWED jika tidak valid
-   
+
    validateFileSize(size: number, maxSizeMB: number): void
      - Throw DOCUMENT_SIZE_EXCEEDED jika melebihi limit
 
@@ -321,7 +321,7 @@ File: apps/api/src/health/
 
 1. health.controller.ts
    GET /health → public endpoint (tidak perlu auth)
-   
+
    Response:
    {
      "status": "ok" | "degraded" | "down",
@@ -340,10 +340,10 @@ File: apps/api/src/health/
    checkDatabase(): Promise<ServiceHealth>
      - Simple query: prisma.$queryRaw`SELECT 1`
      - Catat response time
-   
+
    checkRedis(): Promise<ServiceHealth>
      - redis.ping()
-   
+
    checkStorage(): Promise<ServiceHealth>
      - minio.bucketExists(bucketName)
 

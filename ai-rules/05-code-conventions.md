@@ -29,6 +29,7 @@
 ```
 
 **Aturan TypeScript yang tidak boleh dilanggar:**
+
 - ❌ DILARANG: `any`, `unknown` tanpa type guard, `@ts-ignore`, `@ts-expect-error`
 - ❌ DILARANG: Non-null assertion operator (`!`) kecuali ada comment justifikasi
 - ✅ WAJIB: Semua fungsi memiliki explicit return type
@@ -39,6 +40,7 @@
 ## 5.2 Naming Conventions
 
 ### Variabel & Fungsi
+
 ```typescript
 // camelCase untuk variabel dan fungsi
 const vesselName = "MV Nusantara";
@@ -49,6 +51,7 @@ function calculateDaysUntilExpiry(expiryDate: Date): number {}
 ```
 
 ### Kelas & Interface
+
 ```typescript
 // PascalCase untuk class, interface, type, enum
 
@@ -70,6 +73,7 @@ enum CertificateType {
 ```
 
 ### Konstanta
+
 ```typescript
 // SCREAMING_SNAKE_CASE untuk konstanta global
 const MAX_CREW_CAPACITY = 50;
@@ -80,6 +84,7 @@ const API_VERSION = "v1";
 ```
 
 ### File dan Folder
+
 ```
 # Backend (NestJS) — kebab-case
 vessel.controller.ts
@@ -106,6 +111,7 @@ validate-imo-number.ts
 ## 5.3 SOLID Principles — Implementasi Konkret
 
 ### Single Responsibility Principle
+
 ```typescript
 // ✅ BENAR — satu class, satu tanggung jawab
 class VesselCertificateExpiryChecker {
@@ -126,6 +132,7 @@ class VesselService {
 ```
 
 ### Open/Closed Principle
+
 ```typescript
 // ✅ BENAR — gunakan strategy pattern untuk variasi perilaku
 interface NotificationStrategy {
@@ -138,6 +145,7 @@ class SmsNotificationStrategy implements NotificationStrategy { ... }
 ```
 
 ### Liskov Substitution Principle
+
 ```typescript
 // ✅ BENAR — subclass harus bisa menggantikan parent
 abstract class BaseDocument {
@@ -152,6 +160,7 @@ class SafetyManagementCertificate extends BaseDocument {
 ```
 
 ### Interface Segregation Principle
+
 ```typescript
 // ✅ BENAR — interface spesifik, tidak fat
 interface IReadableVesselRepository {
@@ -176,19 +185,20 @@ interface IVesselRepository {
 ```
 
 ### Dependency Inversion Principle
+
 ```typescript
 // ✅ BENAR — depend on abstraction
 class RegisterVesselHandler {
   constructor(
-    private readonly vesselRepo: IVesselRepository,  // Interface
-    private readonly eventEmitter: IEventEmitter,    // Interface
+    private readonly vesselRepo: IVesselRepository, // Interface
+    private readonly eventEmitter: IEventEmitter, // Interface
   ) {}
 }
 
 // ❌ SALAH — depend on concrete
 class RegisterVesselHandler {
   constructor(
-    private readonly vesselRepo: PrismaVesselRepository,  // Concrete
+    private readonly vesselRepo: PrismaVesselRepository, // Concrete
   ) {}
 }
 ```
@@ -201,24 +211,23 @@ class RegisterVesselHandler {
 // ❌ SALAH — logika duplikat di dua tempat
 // di vessel.service.ts
 const daysUntilExpiry = Math.ceil(
-  (expiryDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+  (expiryDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
 );
 
 // di crew.service.ts (copy-paste!)
 const daysUntilExpiry = Math.ceil(
-  (expiryDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+  (expiryDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
 );
 
 // ✅ BENAR — satu sumber kebenaran
 // packages/shared/src/utils/date.utils.ts
 export function calculateDaysUntilDate(targetDate: Date): number {
-  return Math.ceil(
-    (targetDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-  );
+  return Math.ceil((targetDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
 }
 ```
 
 **Aturan DRY:**
+
 - Logika yang sama di 2+ tempat → **wajib** di-extract ke shared utility
 - Validasi yang sama di FE & BE → **wajib** di-extract ke shared Zod schema
 - Konstanta yang sama di 2+ file → **wajib** di `packages/shared/constants/`
@@ -250,7 +259,7 @@ async function findVesselById(id: string, companyId: string): Promise<Vessel> {
   const vessel = await this.vesselRepo.findById(id, companyId);
 
   if (!vessel) {
-    throw new VesselNotFoundException(id);  // Domain exception
+    throw new VesselNotFoundException(id); // Domain exception
   }
 
   return vessel;
@@ -261,7 +270,7 @@ async function findVesselById(id: string): Promise<Vessel | null> {
   try {
     return await this.vesselRepo.findById(id);
   } catch {
-    return null;  // Error ditelan
+    return null; // Error ditelan
   }
 }
 ```
@@ -283,7 +292,7 @@ async function getVesselWithCrew(vesselId: string): Promise<VesselWithCrew> {
 // ❌ SALAH — sequential await yang tidak perlu
 async function getVesselWithCrew(vesselId: string): Promise<VesselWithCrew> {
   const vessel = await this.vesselService.findById(vesselId);
-  const crew = await this.crewService.findByVessel(vesselId);  // Bisa parallel
+  const crew = await this.crewService.findByVessel(vesselId); // Bisa parallel
   return { vessel, crew };
 }
 ```
@@ -295,13 +304,13 @@ async function getVesselWithCrew(vesselId: string): Promise<VesselWithCrew> {
 ```typescript
 /**
  * Menghitung status expiry sertifikat berdasarkan tanggal kadaluarsa.
- * 
+ *
  * Business Rule:
  * - > 90 hari: VALID
  * - 30–90 hari: EXPIRING_SOON (trigger warning)
  * - 0–29 hari: CRITICAL (trigger urgent alert)
  * - < 0 hari: EXPIRED (vessel tidak boleh beroperasi)
- * 
+ *
  * @param expiryDate - Tanggal kadaluarsa sertifikat
  * @returns CertificateExpiryStatus
  */
@@ -316,6 +325,7 @@ function calculateCertificateExpiryStatus(expiryDate: Date): CertificateExpirySt
 ```
 
 **Aturan komentar:**
+
 - ✅ JSDoc wajib untuk semua public function di service & domain layer
 - ✅ Komentar business rule wajib — terutama untuk logika compliance maritim
 - ❌ Jangan komentar hal yang obvious dari kode itu sendiri
@@ -385,4 +395,4 @@ function VesselCard({ vessel }) {
 
 ---
 
-*Konvensi ini di-enforce via ESLint + Prettier + pre-commit hooks. Tidak ada pengecualian.*
+_Konvensi ini di-enforce via ESLint + Prettier + pre-commit hooks. Tidak ada pengecualian._

@@ -1,17 +1,18 @@
 "use client";
 
-import apiClient from "@/services/api.client";
-import { useAuthStore } from "@/stores/auth.store";
-import { useUiStore } from "@/stores/ui.store";
 import { LogOut, Menu, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export function Topbar() {
+import apiClient from "@/services/api.client";
+import { useAuthStore } from "@/stores/auth.store";
+import { useUiStore } from "@/stores/ui.store";
+
+export function Topbar(): React.JSX.Element {
   const { user, logout } = useAuthStore();
   const { toggleSidebar } = useUiStore();
   const router = useRouter();
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     try {
       await apiClient.post("/auth/logout");
     } catch {

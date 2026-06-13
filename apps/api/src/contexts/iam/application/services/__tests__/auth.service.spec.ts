@@ -1,16 +1,17 @@
-import { Test, type TestingModule } from "@nestjs/testing";
-import { AuthService } from "../auth.service";
-import { PrismaService } from "../../../../../shared/database/prisma.service";
-import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { Test, type TestingModule } from "@nestjs/testing";
+import * as bcrypt from "bcrypt";
+
 import { createMockUser, createMockRole } from "../../../../../../test/factories/user.factory";
+import { PrismaService } from "../../../../../shared/database/prisma.service";
 import {
   InvalidCredentialsException,
   UserEmailExistsException,
   UserNotFoundException,
   AccountDisabledException,
 } from "../../../domain/exceptions/user-not-found.exception";
-import * as bcrypt from "bcrypt";
+import { AuthService } from "../auth.service";
 
 describe("AuthService", () => {
   let service: AuthService;

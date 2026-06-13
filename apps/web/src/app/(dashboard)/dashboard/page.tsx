@@ -1,7 +1,8 @@
 "use client";
 
-import { useAlertPanel, useCertificateSummary, useFleetOverview } from "@/hooks/use-dashboard";
 import { AlertTriangle, Anchor, FileText, Ship, Users } from "lucide-react";
+
+import { useAlertPanel, useCertificateSummary, useFleetOverview } from "@/hooks/use-dashboard";
 
 function KpiCard({
   title,
@@ -15,7 +16,7 @@ function KpiCard({
   unit?: string;
   icon: React.ReactNode;
   color: string;
-}) {
+}): React.JSX.Element {
   return (
     <div className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-3">
       <div className="mb-1 flex items-center justify-between">
@@ -44,7 +45,7 @@ function AlertItem({
   title: string;
   description: string;
   daysRemaining?: number;
-}) {
+}): React.JSX.Element {
   const colorMap: Record<string, string> = {
     danger: "var(--color-status-danger)",
     critical: "var(--color-status-critical)",
@@ -78,7 +79,7 @@ function AlertItem({
   );
 }
 
-export default function DashboardPage() {
+export default function DashboardPage(): React.JSX.Element {
   const { data: overview, isLoading: loadingOverview } = useFleetOverview();
   const { data: certSummary, isLoading: loadingCert } = useCertificateSummary();
   const { data: alertPanel, isLoading: loadingAlerts } = useAlertPanel();

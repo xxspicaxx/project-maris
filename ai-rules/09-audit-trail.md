@@ -7,6 +7,7 @@
 ## 9.1 Prinsip Audit Trail
 
 **Apa yang harus di-audit:**
+
 - Semua operasi CREATE, UPDATE, DELETE pada data utama
 - Login / Logout (berhasil maupun gagal)
 - Export data
@@ -15,6 +16,7 @@
 - Upload / delete dokumen
 
 **Apa yang TIDAK perlu di-audit:**
+
 - GET requests (read-only)
 - Health check endpoints
 - Pagination / filter queries
@@ -38,10 +40,7 @@ export class AuditInterceptor implements NestInterceptor {
     const user: RequestUser = request.user;
 
     // Ambil metadata dari controller
-    const auditConfig = this.reflector.get<AuditConfig>(
-      AUDIT_KEY,
-      context.getHandler()
-    );
+    const auditConfig = this.reflector.get<AuditConfig>(AUDIT_KEY, context.getHandler());
 
     if (!auditConfig || request.method === "GET") {
       return next.handle();
@@ -129,8 +128,8 @@ export class CaptureOldValuesMiddleware implements NestMiddleware {
     }
 
     // Extract resource type dan ID dari URL
-    const resourceId = req.params.id || req.params.vesselId ||
-                       req.params.seafarerId || req.params.voyageId;
+    const resourceId =
+      req.params.id || req.params.vesselId || req.params.seafarerId || req.params.voyageId;
 
     if (resourceId) {
       req["_oldValues"] = await this.fetchCurrentState(req.path, resourceId);
@@ -169,11 +168,7 @@ export class AuditService {
     });
   }
 
-  async getHistory(
-    resource: string,
-    resourceId: string,
-    companyId: string
-  ): Promise<AuditLog[]> {
+  async getHistory(resource: string, resourceId: string, companyId: string): Promise<AuditLog[]> {
     return this.prisma.auditLog.findMany({
       where: { resource, resourceId, companyId },
       include: { user: { select: { firstName: true, lastName: true, email: true } } },
@@ -194,7 +189,7 @@ async function auditLoginAttempt(
   email: string,
   success: boolean,
   ipAddress: string,
-  reason?: string
+  reason?: string,
 ): Promise<void> {
   await this.auditService.log({
     userId: success ? userId : undefined,
@@ -248,30 +243,30 @@ GET /api/v1/audit/voyage/:voyageId
 
 ## 9.8 Retention & Archiving
 
-| Jenis Log | Retensi | Archiving |
-|---|---|---|
-| Audit log biasa | 2 tahun | Cold storage setelah 1 tahun |
-| Login/auth log | 1 tahun | Cold storage setelah 6 bulan |
+| Jenis Log           | Retensi | Archiving                    |
+| ------------------- | ------- | ---------------------------- |
+| Audit log biasa     | 2 tahun | Cold storage setelah 1 tahun |
+| Login/auth log      | 1 tahun | Cold storage setelah 6 bulan |
 | Certificate changes | 5 tahun | Tidak diarchive (compliance) |
-| Financial records | 7 tahun | Cold storage setelah 3 tahun |
+| Financial records   | 7 tahun | Cold storage setelah 3 tahun |
 
 ---
 
 ## 9.9 Resource yang Wajib Di-audit
 
-| Resource | CREATE | UPDATE | DELETE | Notes |
-|---|---|---|---|---|
-| `vessel` | ✅ | ✅ | ✅ | Termasuk status change |
-| `seafarer` | ✅ | ✅ | ✅ | |
-| `crew_assignment` | ✅ | ✅ | ✅ | Sign-on/off |
-| `vessel_certificate` | ✅ | ✅ | ✅ | Compliance critical |
-| `seafarer_certificate` | ✅ | ✅ | ✅ | Compliance critical |
-| `voyage` | ✅ | ✅ | ✅ | |
-| `document` | ✅ | — | ✅ | Upload & delete |
-| `user` | ✅ | ✅ | ✅ | Termasuk role change |
-| `incident` | ✅ | ✅ | — | ISM requirement |
-| `work_order` | ✅ | ✅ | ✅ | Status changes |
+| Resource               | CREATE | UPDATE | DELETE | Notes                  |
+| ---------------------- | ------ | ------ | ------ | ---------------------- |
+| `vessel`               | ✅     | ✅     | ✅     | Termasuk status change |
+| `seafarer`             | ✅     | ✅     | ✅     |                        |
+| `crew_assignment`      | ✅     | ✅     | ✅     | Sign-on/off            |
+| `vessel_certificate`   | ✅     | ✅     | ✅     | Compliance critical    |
+| `seafarer_certificate` | ✅     | ✅     | ✅     | Compliance critical    |
+| `voyage`               | ✅     | ✅     | ✅     |                        |
+| `document`             | ✅     | —      | ✅     | Upload & delete        |
+| `user`                 | ✅     | ✅     | ✅     | Termasuk role change   |
+| `incident`             | ✅     | ✅     | —      | ISM requirement        |
+| `work_order`           | ✅     | ✅     | ✅     | Status changes         |
 
 ---
 
-*Audit log adalah immutable — tidak ada endpoint untuk edit atau delete audit log.*
+_Audit log adalah immutable — tidak ada endpoint untuk edit atau delete audit log._

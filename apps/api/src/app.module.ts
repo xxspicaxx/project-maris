@@ -4,16 +4,17 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+
 import { CompanyModule } from "./contexts/company/company.module";
 import { DashboardModule } from "./contexts/dashboard/dashboard.module";
 import { FleetModule } from "./contexts/fleet/fleet.module";
 import { IamModule } from "./contexts/iam/iam.module";
+import { HealthController } from "./health.controller";
 import { PrismaService } from "./shared/database/prisma.service";
 import { GlobalExceptionFilter } from "./shared/filters/global-exception.filter";
 import { AuditInterceptor } from "./shared/interceptors/audit.interceptor";
 import { RequestIdMiddleware } from "./shared/middleware/request-id.middleware";
 import { StorageModule } from "./shared/storage/storage.module";
-import { HealthController } from "./health.controller";
 
 @Module({
   imports: [
@@ -68,7 +69,7 @@ import { HealthController } from "./health.controller";
   ],
 })
 export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer): void {
     consumer.apply(RequestIdMiddleware).forRoutes("*");
   }
 }

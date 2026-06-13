@@ -163,48 +163,48 @@ Lokasi: apps/api/src/contexts/crew/
 DOMAIN LAYER:
 
 1. entities/seafarer.entity.ts  (Aggregate Root)
-   
+
    Properties: id, companyId, seamanBookNumber, firstName, lastName,
    nationality, dateOfBirth, gender, passportNumber, passportExpiry,
    emergencyContact, status, createdAt, updatedAt, createdBy, deletedAt
-   
+
    Business methods:
    get fullName(): string
    get age(): number
-   
+
    activate(): void
    deactivate(): void
    blacklist(reason: string): void
-   
+
    static create(data): Seafarer
 
 2. entities/crew-assignment.entity.ts
-   
+
    Properties: id, companyId, seafarerId, vesselId, rank, signOnDate,
    signOffDate, signOnPort, signOffPort, contractDuration, remarks
-   
+
    Business methods:
    signOff(port: string, signOffDate: Date, signedOffBy: string): void
      → Validate signOffDate >= signOnDate
      → Emit CrewSignedOffEvent
-   
+
    get isOnBoard(): boolean
      → return signOffDate === null
-   
+
    get contractDaysRemaining(): number
-   
+
    static create(data): CrewAssignment
      → Emit CrewSignedOnEvent
 
 3. domain services/stcw-compliance.service.ts
-   
+
    validateCertificatesForRank(
      seafarer: Seafarer,
      certificates: SeafarerCertificate[],
      rank: CrewRank,
      signOnDate: Date
    ): StcwComplianceResult
-   
+
    Implement logic dari docs/ai-rules/12-maritime-compliance.md section 12.3:
    - REQUIRED_CERTIFICATES_BY_RANK mapping (lengkap semua rank)
    - Check MISSING certificates
@@ -231,7 +231,7 @@ Commands:
   → Jika ada violations → throw StcwComplianceViolationException
   → Create CrewAssignment
   → Emit CrewSignedOnEvent
-  
+
 - sign-off-crew/
   → FindAssignment
   → assignment.signOff()
@@ -265,38 +265,38 @@ BACKEND CONTROLLERS:
 
 1. seafarer.controller.ts
    Tag: "Crew — Seafarers"
-   
+
    GET    /api/v1/crew/seafarers                    List dengan filter
    POST   /api/v1/crew/seafarers                    Register seafarer baru
    GET    /api/v1/crew/seafarers/:seafarerId         Detail seafarer
    PATCH  /api/v1/crew/seafarers/:seafarerId         Update data
    DELETE /api/v1/crew/seafarers/:seafarerId         Soft delete
-   
+
    GET    /api/v1/crew/seafarers/:seafarerId/certificates
    POST   /api/v1/crew/seafarers/:seafarerId/certificates
    PATCH  /api/v1/crew/seafarers/:seafarerId/certificates/:certId
    POST   /api/v1/crew/seafarers/:seafarerId/certificates/:certId/renew
-   
+
    GET    /api/v1/crew/seafarers/:seafarerId/assignments  ← Riwayat kapal
 
 2. crew-assignment.controller.ts
    Tag: "Crew — Assignments"
-   
+
    POST   /api/v1/crew/assignments/sign-on
    Body: { seafarerId, vesselId, rank, signOnDate, signOnPort, contractDuration }
    → Run STCW validation
    → Jika violation: return 422 dengan detail violations (jangan block UI tapi tunjukkan)
-   
+
    POST   /api/v1/crew/assignments/:assignmentId/sign-off
    Body: { signOffPort, signOffDate, remarks }
-   
+
    GET    /api/v1/crew/manning-list/:vesselId        ← Siapa on board sekarang
    GET    /api/v1/crew/compliance-summary            ← Dashboard widget
 
 FRONTEND PAGES:
 
 3. apps/web/src/app/(dashboard)/crew/seafarers/page.tsx
-   
+
    Table columns:
    - Nama Lengkap (clickable)
    - No. Buku Pelaut (monospace)
@@ -306,36 +306,36 @@ FRONTEND PAGES:
    - Sertifikat (indicator bar: berapa ok, berapa warning)
    - Kapal Saat Ini (jika on board)
    - Actions
-   
+
    Actions toolbar: [Filter] [+ Daftarkan Pelaut] [Export Excel]
 
 4. apps/web/src/app/(dashboard)/crew/seafarers/[seafarerId]/page.tsx
-   
+
    Layout 2 kolom:
-   
+
    Kolom kiri (1/3):
    - Info Panel: Data Pribadi (nama, tanggal lahir, kebangsaan, dll)
    - Info Panel: Dokumen (no. paspor, buku pelaut, expiry)
    - Info Panel: Kontak Darurat
-   
+
    Kolom kanan (2/3):
    Tabs:
    [Sertifikat] [Riwayat Kapal] [Audit Log]
-   
+
    Tab Sertifikat:
    - List semua cert dengan CertificateExpiryBar
    - Sort: EXPIRED dulu, kemudian by expiry date
    - Button: + Tambah Sertifikat, Perbarui (per cert)
-   
+
    Tab Riwayat Kapal:
    - Timeline: kapal, jabatan, sign-on, sign-off, durasi
 
 5. apps/web/src/app/(dashboard)/crew/manning/page.tsx
-   
+
    Manning List — per vessel view
-   
+
    Vessel selector di atas (dropdown)
-   
+
    Table per jabatan (grouped):
    ┌─── DEK ──────────────────────────────────────────────────┐
    │ Nakhoda      │ Joko Widodo  │ Sign On: 12 Jan │ 45 hr lagi│
@@ -344,9 +344,9 @@ FRONTEND PAGES:
    ├─── MESIN ────────────────────────────────────────────────┤
    │ KKM          │ Budi Santoso │ Sign On: 1 Mar  │ 60 hr lagi│
    └──────────────────────────────────────────────────────────┘
-   
+
    Button: [Sign On Kru Baru] [Sign Off Kru]
-   
+
    Sign-On Dialog:
    - Cari seafarer (search by nama/buku pelaut)
    - Pilih jabatan
@@ -376,39 +376,39 @@ Baca docs/ai-rules/11-domain-glossary.md untuk voyage terminology.
 DOMAIN:
 
 1. entities/voyage.entity.ts (Aggregate Root)
-   
+
    Properties: id, companyId, vesselId, voyageNumber (auto-generated),
    status (PLANNED/ACTIVE/COMPLETED/CANCELLED),
    departurePort, destinationPort,
    etd, eta, atd, ata,
    cargoType, cargoQuantity, cargoUnit,
    isBallastedVoyage, remarks
-   
+
    Business methods:
    static create(data): Voyage
      → Auto-generate voyageNumber: {companyCode}-{YYYY}-{sequential:04d}
-   
+
    approve(): void
      → status PLANNED → ACTIVE, set actualDeparture
-   
+
    complete(arrivalData): void
      → status ACTIVE → COMPLETED, set ata
-   
+
    cancel(reason: string): void
      → Hanya bisa dari PLANNED
-   
+
    addPortCall(portCall): void
-   
+
    get duration(): number | null   ← hari, jika sudah ada ata
 
 2. domain/services/voyage-compliance.service.ts
-   
+
    async validateDepartureCompliance(
      vessel: Vessel,
      company: Company,
      voyageDate: Date
    ): Promise<ComplianceCheckResult>
-   
+
    Checks (dari 12-maritime-compliance.md section 12.9):
    1. SMC valid? → HARD BLOCK jika expired
    2. DOC valid? → HARD BLOCK jika expired
@@ -416,7 +416,7 @@ DOMAIN:
    4. Manning >= minimum safe manning? → HARD BLOCK jika kurang
    5. PSC detained? → HARD BLOCK jika detention aktif
    6. SMC critical (<30 hari)? → SOFT BLOCK (perlu approval)
-   
+
    Return:
    {
      canDepart: boolean,
@@ -673,4 +673,4 @@ Dashboard widget di /dashboard:
 
 ---
 
-*Prompt 08–11 mengikuti pola yang sama: domain → application → infrastructure → presentation → frontend. Selalu buat unit tests bersamaan.*
+_Prompt 08–11 mengikuti pola yang sama: domain → application → infrastructure → presentation → frontend. Selalu buat unit tests bersamaan._

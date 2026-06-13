@@ -223,25 +223,25 @@ COMMANDS:
      contractDuration, companyId, createdBy
    }
    Handler (CRITICAL — compliance check here):
-   
+
    → FindSeafarer (throw jika tidak ada)
    → FindActiveAssignment:
       Cek apakah seafarer punya assignment tanpa signOffDate
       Jika ada → throw SeafarerAlreadyOnBoardException
-   
+
    → FetchCertificates: ambil semua sertifikat seafarer ini
-   
+
    → stcwService.validateForSignOn(certificates, rank, signOnDate)
       Jika violations.length > 0:
         Pisahkan: criticalViolations (MISSING atau EXPIRED cert wajib)
         vs warningViolations (EXPIRING_SOON dalam 30 hari)
-        
+
         Jika criticalViolations.length > 0:
           → throw StcwViolationException(criticalViolations)
-        
+
         Jika hanya warnings:
           → Lanjut tapi catat warnings di assignment.remarks
-   
+
    → CrewAssignment.create({ seafarerId, vesselId, rank, signOnDate, ... })
    → repository.save(assignment)
    → Emit CrewSignedOnEvent
@@ -352,25 +352,25 @@ CONTROLLERS:
 
 4. seafarer.controller.ts
    @ApiTags("Crew — Seafarers")
-   
+
    GET    /api/v1/crew/seafarers
    @Permissions("crew:read")
    @ApiQuery: page, limit, status, search, onBoard (boolean), vesselId
-   
+
    POST   /api/v1/crew/seafarers
    @Permissions("crew:create")
    @Audit({ resource: "seafarer" })
-   
+
    GET    /api/v1/crew/seafarers/:seafarerId
    @Permissions("crew:read")
-   
+
    PATCH  /api/v1/crew/seafarers/:seafarerId
    @Permissions("crew:update")
    @Audit({ resource: "seafarer", captureOld: true })
-   
+
    DELETE /api/v1/crew/seafarers/:seafarerId
    @Permissions("crew:delete")
-   
+
    GET    /api/v1/crew/seafarers/:seafarerId/certificates
    POST   /api/v1/crew/seafarers/:seafarerId/certificates
    PATCH  /api/v1/crew/seafarers/:seafarerId/certificates/:certId
@@ -379,22 +379,22 @@ CONTROLLERS:
 
 5. crew-assignment.controller.ts
    @ApiTags("Crew — Manning")
-   
+
    POST   /api/v1/crew/sign-on
    @Permissions("crew:sign_on")
    @Audit({ resource: "crew_assignment" })
    Body: SignOnCrewDto
    Response 201: CrewAssignmentDto
    OnError StcwViolationException → 422 dengan violations array dalam error.details
-   
+
    POST   /api/v1/crew/sign-off/:assignmentId
    @Permissions("crew:sign_off")
    @Audit({ resource: "crew_assignment", captureOld: true })
-   
+
    GET    /api/v1/crew/manning/:vesselId
    @Permissions("crew:read")
    Response: ManningSummaryDto
-   
+
    GET    /api/v1/crew/compliance-summary
    @Permissions("crew:read")
    Response: CrewComplianceSummaryDto
@@ -444,7 +444,7 @@ apps/web/src/app/(dashboard)/crew/
 2. seafarers/[seafarerId]/page.tsx — Detail Pelaut
 
    2-column layout:
-   
+
    LEFT (1/3):
    - Photo placeholder (avatar dengan inisial)
    - InfoPanel: Data Pribadi
@@ -454,10 +454,10 @@ apps/web/src/app/(dashboard)/crew/
    - InfoPanel: Status & Jabatan
      Status, Jabatan Saat Ini, Kapal Saat Ini, Sign On Date, Sisa Kontrak
    - InfoPanel: Kontak Darurat
-   
+
    RIGHT (2/3):
    TabNav: [Sertifikat] [Riwayat Kapal] [Audit]
-   
+
    Tab SERTIFIKAT:
    [+ Tambah Sertifikat]
    Dense list (bukan table besar):
@@ -471,9 +471,9 @@ apps/web/src/app/(dashboard)/crew/
    │ Medical Certificate     MED-2023-9012  RS Pelabuhan     │
    │  ██████████████░░░░░░  Berlaku: 20 Jun 2024 ⚠ 45 hr   │
    └──────────────────────────────────────────────────────────┘
-   
+
    Klik cert item → expand dengan detail + tombol Perbarui / Perpanjang
-   
+
    Tab RIWAYAT KAPAL:
    Timeline vertikal:
    ● Jan 2024 – Sekarang  |  Mualim I  |  MV Nusantara Jaya 1
@@ -484,9 +484,9 @@ apps/web/src/app/(dashboard)/crew/
 
    VESSEL SELECTOR (di atas, sticky):
    Dropdown kapal dengan search. Default: kapal pertama yang active.
-   
+
    MANNING TABLE (grouped by department):
-   
+
    ┌─── DEPARTEMEN DEK ───────────────────────────────────────┐
    │  Jabatan       Nama              Sign On    Sisa Kontrak │
    │  Nakhoda       Joko Santoso      12 Jan 24  45 hari      │
@@ -497,24 +497,24 @@ apps/web/src/app/(dashboard)/crew/
    │  KKM           Hendra Wijaya     15 Jan 24  30 hari  🔴  │
    │  Masinis II    Doni Kusuma       20 Feb 24  60 hari      │
    └──────────────────────────────────────────────────────────┘
-   
+
    JABATAN KOSONG: highlight merah, row "── KOSONG ──"
    SISA KONTRAK ≤30 HARI: badge oranye dengan ikon warning
-   
+
    Action buttons:
    [+ Sign On Kru Baru] [Sign Off Kru] [Export Manning List]
-   
+
    SIGN-ON DIALOG (Modal 560px):
    Step 1: Cari Pelaut
    - Search input → hasil muncul di bawah (nama + buku pelaut + status)
    - Klik untuk select
-   
+
    Step 2: Detail Penugasan
    - Jabatan* (select — rank)
    - Tanggal Naik* (date picker)
    - Pelabuhan Naik* (text)
    - Durasi Kontrak* (number + "bulan")
-   
+
    Step 3: STCW Compliance Check (auto-run setelah Step 2 diisi)
    - Loading: "Memeriksa sertifikat..."
    - Hasil: list cert dengan status (✓ valid, ⚠ expiring, ✗ missing/expired)
@@ -523,7 +523,7 @@ apps/web/src/app/(dashboard)/crew/
    - Jika semua OK atau hanya warning:
      + tombol "Proses Sign On" enabled
      + Warning banner kuning jika ada cert yang mau expired
-   
+
    [Batal] [← Kembali] [Proses Sign On ✓]
 ```
 

@@ -94,14 +94,14 @@ Data fetch per komponen — bukan satu big fetch di parent.
 
 1. components/dashboard/AlertPanel.tsx
 
-   Data: useQuery({ queryKey: ["compliance-summary"], 
+   Data: useQuery({ queryKey: ["compliance-summary"],
                     queryFn: getComplianceSummary,
                     refetchInterval: 5 * 60 * 1000 })
-   
+
    VISUAL SPEC (dense list, seperti email inbox):
-   
+
    Header: "⚠ Alert Kepatuhan" [badge: total count] [refresh icon]
-   
+
    List (sorted: EXPIRED → CRITICAL → EXPIRING_SOON):
    ┌───────────────────────────────────────────────────────────┐
    │ ● [EXPIRED]       MV Nusantara 1 · SMC · Expired 5 hr lalu│ ← row: 40px
@@ -109,23 +109,23 @@ Data fetch per komponen — bukan satu big fetch di parent.
    │ ● [KRITIS]        MV Armada 3 · ISSC · 18 hari lagi       │
    │ ● [SEGERA HABIS]  MV Nusantara 2 · Load Line · 45 hr lagi │
    └───────────────────────────────────────────────────────────┘
-   
+
    Setiap row:
    - Klik → navigate ke /fleet/vessels/{vesselId}?tab=certificates
    - Warna dot: merah (expired), oranye (critical), kuning (expiring)
    - Vessel name: bold 12px, cert type + waktu: secondary 11px
    - Max 15 items, footer: "X alert aktif — Lihat Semua →"
-   
+
    Empty state (semua OK):
    ✅ icon + "Semua sertifikat dalam kondisi baik" (green tinted bg)
 
 2. components/dashboard/VesselStatusChart.tsx
 
    Gunakan recharts PieChart (donut style).
-   
+
    Warna sesuai VesselStatus dari design system:
    ACTIVE → #22c55e, DRYDOCK → #f59e0b, LAID_UP → #94a3b8, SCRAPPED → #64748b
-   
+
    Layout:
    - Donut chart center: total vessel count
    - Di bawah chart: breakdown list (status + count + warna dot)
@@ -134,25 +134,25 @@ Data fetch per komponen — bukan satu big fetch di parent.
 3. components/dashboard/RecentActivityPanel.tsx
 
    Data: GET /api/v1/audit/recent?limit=10
-   
+
    List item:
    [icon action] [resource] [id singkat] · [user] · [time ago]
-   
+
    CREATE → PlusCircle (biru)
    UPDATE → PencilLine (kuning)
    DELETE → Trash2 (merah)
    LOGIN  → LogIn (hijau)
-   
+
    Time ago: gunakan date-fns formatDistanceToNow()
    Max 10 items, height fixed dengan internal scroll
 
 4. components/dashboard/UpcomingExpiryPanel.tsx
 
    Data: GET /api/v1/vessels/certificates?status=EXPIRING_SOON,CRITICAL&limit=10
-   
+
    List item:
    [vessel name] · [cert type] · [expiry date] · [days badge]
-   
+
    Days badge: kuning jika >30 hari, oranye jika ≤30 hari
    Sorted: soonest expiry first
    Klik → navigasi ke sertifikat

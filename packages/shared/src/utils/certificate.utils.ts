@@ -1,6 +1,6 @@
-import { CertificateStatus } from "../enums/certificate-status.enum";
-import { EXPIRY_CRITICAL_DAYS, EXPIRY_WARNING_DAYS } from "../constants/certificate-thresholds";
 import { calculateDaysUntilDate } from "./date.utils";
+import { EXPIRY_CRITICAL_DAYS, EXPIRY_WARNING_DAYS } from "../constants/certificate-thresholds";
+import { CertificateStatus } from "../enums/certificate-status.enum";
 
 export function calculateCertificateExpiryStatus(expiryDate: Date | string): CertificateStatus {
   const daysUntil = calculateDaysUntilDate(expiryDate);

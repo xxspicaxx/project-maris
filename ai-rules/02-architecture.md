@@ -8,13 +8,13 @@
 
 Sistem menggunakan kombinasi:
 
-| Prinsip | Implementasi |
-|---|---|
-| **Clean Architecture** | Dependency rule: domain ← application ← infrastructure |
-| **Domain-Driven Design (DDD)** | Bounded context per domain maritim |
-| **API-First** | Semua fitur diakses via API; UI adalah consumer pertama |
-| **CQRS (lightweight)** | Pisahkan read model (query) dari write model (command) untuk modul kompleks |
-| **Event-Driven (internal)** | Domain events untuk side effects (email, audit, notification) |
+| Prinsip                        | Implementasi                                                                |
+| ------------------------------ | --------------------------------------------------------------------------- |
+| **Clean Architecture**         | Dependency rule: domain ← application ← infrastructure                      |
+| **Domain-Driven Design (DDD)** | Bounded context per domain maritim                                          |
+| **API-First**                  | Semua fitur diakses via API; UI adalah consumer pertama                     |
+| **CQRS (lightweight)**         | Pisahkan read model (query) dari write model (command) untuk modul kompleks |
+| **Event-Driven (internal)**    | Domain events untuk side effects (email, audit, notification)               |
 
 ---
 
@@ -42,10 +42,12 @@ Sistem menggunakan kombinasi:
 ```
 
 ### Dependency Rule (WAJIB)
+
 ```
 Domain  ←  Application  ←  Infrastructure
 Domain  ←  Application  ←  Presentation
 ```
+
 - **Domain** tidak boleh import dari layer manapun
 - **Application** hanya boleh import dari Domain
 - **Infrastructure** mengimplementasikan interface yang didefinisikan di Domain
@@ -71,7 +73,9 @@ contexts/
 ```
 
 ### Anti-Corruption Layer
+
 Komunikasi antar bounded context **hanya** melalui:
+
 1. **Domain Events** (async, via internal event bus)
 2. **Application Service interfaces** (sync, via dependency injection)
 
@@ -145,6 +149,7 @@ interface RequestContext {
 ```
 
 ### Tenant Isolation Middleware (WAJIB ada di setiap query)
+
 ```typescript
 // Di setiap repository, selalu sertakan companyId filter
 async findAll(companyId: string): Promise<Vessel[]> {
@@ -155,6 +160,7 @@ async findAll(companyId: string): Promise<Vessel[]> {
 ```
 
 **AI RULES:**
+
 - ❌ JANGAN pernah buat query tanpa `companyId` filter pada data yang tenant-scoped
 - ❌ JANGAN expose `companyId` selection ke user biasa (hanya dari JWT)
 - ✅ Super Admin dapat query lintas company dengan explicit flag
@@ -164,6 +170,7 @@ async findAll(companyId: string): Promise<Vessel[]> {
 ## 2.6 Event-Driven Patterns
 
 ### Domain Events
+
 ```typescript
 // Domain event didefinisikan di domain layer
 class CertificateExpiredEvent {
@@ -171,7 +178,7 @@ class CertificateExpiredEvent {
     public readonly certificateId: string,
     public readonly vesselId: string,
     public readonly expiryDate: Date,
-    public readonly occurredAt: Date = new Date()
+    public readonly occurredAt: Date = new Date(),
   ) {}
 }
 
@@ -185,13 +192,14 @@ class SendCertificateExpiryAlertHandler {
 ```
 
 ### Events yang Harus Ada (Critical)
-| Event | Trigger | Handler |
-|---|---|---|
-| `CertificateExpiringEvent` | 90/60/30 hari sebelum expired | Email + Dashboard alert |
-| `CrewSignedOnEvent` | Kru naik kapal | Update manning list, audit log |
-| `VoyageCompletedEvent` | Voyage selesai | Trigger cost finalization |
-| `IncidentReportedEvent` | Incident baru dibuat | Notify ISM Manager |
-| `AuditFindingOpenedEvent` | Finding audit dibuka | Assign responsible party |
+
+| Event                      | Trigger                       | Handler                        |
+| -------------------------- | ----------------------------- | ------------------------------ |
+| `CertificateExpiringEvent` | 90/60/30 hari sebelum expired | Email + Dashboard alert        |
+| `CrewSignedOnEvent`        | Kru naik kapal                | Update manning list, audit log |
+| `VoyageCompletedEvent`     | Voyage selesai                | Trigger cost finalization      |
+| `IncidentReportedEvent`    | Incident baru dibuat          | Notify ISM Manager             |
+| `AuditFindingOpenedEvent`  | Finding audit dibuka          | Assign responsible party       |
 
 ---
 
@@ -220,6 +228,7 @@ class GetVoyageSummaryQuery {
 ```
 
 **Modul yang WAJIB gunakan CQRS:**
+
 - Voyage Management
 - Financial Management
 - Audit & Reporting
@@ -241,4 +250,4 @@ Detail implementasi → lihat `13-error-handling.md`
 
 ---
 
-*Arsitektur ini bersifat final untuk Phase 1-3. Perubahan arsitektur butuh review eksplisit.*
+_Arsitektur ini bersifat final untuk Phase 1-3. Perubahan arsitektur butuh review eksplisit._

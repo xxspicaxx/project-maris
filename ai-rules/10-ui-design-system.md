@@ -7,6 +7,7 @@
 ## 10.1 Design Philosophy
 
 ### Enterprise Dense Information Design
+
 ```
 ✅ Yang benar (DANAOS-style):
 - Data table dengan 15+ kolom
@@ -44,10 +45,10 @@
   --color-primary-100: #dbeafe;
 
   /* Background */
-  --color-bg-canvas: #0f1623;       /* Halaman utama */
-  --color-bg-surface: #161f2e;      /* Panel / card */
-  --color-bg-elevated: #1d2a3e;     /* Modal, dropdown */
-  --color-bg-overlay: #243452;      /* Hover state */
+  --color-bg-canvas: #0f1623; /* Halaman utama */
+  --color-bg-surface: #161f2e; /* Panel / card */
+  --color-bg-elevated: #1d2a3e; /* Modal, dropdown */
+  --color-bg-overlay: #243452; /* Hover state */
 
   /* Borders */
   --color-border-default: #243452;
@@ -61,12 +62,12 @@
   --color-text-disabled: #475569;
 
   /* Status — Maritime Semantic Colors */
-  --color-status-valid: #22c55e;       /* Certificate valid */
-  --color-status-warning: #f59e0b;     /* Expiring soon (90d) */
-  --color-status-critical: #f97316;    /* Critical (30d) */
-  --color-status-danger: #ef4444;      /* Expired / danger */
-  --color-status-info: #3b82f6;        /* Information */
-  --color-status-neutral: #64748b;     /* Inactive / laid-up */
+  --color-status-valid: #22c55e; /* Certificate valid */
+  --color-status-warning: #f59e0b; /* Expiring soon (90d) */
+  --color-status-critical: #f97316; /* Critical (30d) */
+  --color-status-danger: #ef4444; /* Expired / danger */
+  --color-status-info: #3b82f6; /* Information */
+  --color-status-neutral: #64748b; /* Inactive / laid-up */
 
   /* Vessel Status */
   --color-vessel-active: #22c55e;
@@ -82,18 +83,18 @@
 
 ```css
 /* Font Stack */
---font-mono: "JetBrains Mono", "Fira Code", monospace;   /* Angka, kode, IMO */
---font-ui: "Inter", -apple-system, sans-serif;             /* UI elements */
---font-data: "IBM Plex Sans", "Inter", sans-serif;         /* Data tables */
+--font-mono: "JetBrains Mono", "Fira Code", monospace; /* Angka, kode, IMO */
+--font-ui: "Inter", -apple-system, sans-serif; /* UI elements */
+--font-data: "IBM Plex Sans", "Inter", sans-serif; /* Data tables */
 
 /* Type Scale */
---text-xs: 0.6875rem;    /* 11px — Table compact data */
---text-sm: 0.75rem;      /* 12px — Table normal, labels */
---text-base: 0.875rem;   /* 14px — Body text, form fields */
---text-md: 1rem;         /* 16px — Section headings */
---text-lg: 1.125rem;     /* 18px — Page titles */
---text-xl: 1.25rem;      /* 20px — Dashboard KPI values */
---text-2xl: 1.5rem;      /* 24px — Hero numbers */
+--text-xs: 0.6875rem; /* 11px — Table compact data */
+--text-sm: 0.75rem; /* 12px — Table normal, labels */
+--text-base: 0.875rem; /* 14px — Body text, form fields */
+--text-md: 1rem; /* 16px — Section headings */
+--text-lg: 1.125rem; /* 18px — Page titles */
+--text-xl: 1.25rem; /* 20px — Dashboard KPI values */
+--text-2xl: 1.5rem; /* 24px — Hero numbers */
 ```
 
 ---
@@ -101,13 +102,14 @@
 ## 10.4 Layout System
 
 ### ERP Shell Layout
+
 ```tsx
 // Struktur layout utama ERP
-<div className="flex h-screen bg-[var(--color-bg-canvas)] overflow-hidden">
+<div className="flex h-screen overflow-hidden bg-[var(--color-bg-canvas)]">
   {/* Sidebar — 240px, collapsible ke 64px */}
   <Sidebar className="w-60 flex-shrink-0" />
 
-  <div className="flex flex-col flex-1 overflow-hidden">
+  <div className="flex flex-1 flex-col overflow-hidden">
     {/* Top bar — 48px height */}
     <TopBar className="h-12 flex-shrink-0" />
 
@@ -174,6 +176,7 @@
 ## 10.5 Component Specifications
 
 ### Data Table (Core Component)
+
 ```tsx
 // Spesifikasi untuk ERP Data Table
 interface ErpDataTableProps<T> {
@@ -194,7 +197,7 @@ interface ErpDataTableProps<T> {
 // CSS untuk dense table
 .erp-table {
   font-size: var(--text-sm);     /* 12px */
-  
+
   th {
     height: 32px;
     padding: 0 8px;
@@ -205,14 +208,14 @@ interface ErpDataTableProps<T> {
     letter-spacing: 0.05em;
     font-size: var(--text-xs);
   }
-  
+
   td {
     height: 36px;           /* compact row height */
     padding: 0 8px;
     border-bottom: 1px solid var(--color-border-subtle);
     white-space: nowrap;
   }
-  
+
   tr:hover td {
     background: var(--color-bg-overlay);
     cursor: pointer;
@@ -221,6 +224,7 @@ interface ErpDataTableProps<T> {
 ```
 
 ### Status Badges
+
 ```tsx
 // Certificate status badge
 const CertificateStatusBadge = ({ status }: { status: CertificateStatus }) => {
@@ -233,9 +237,11 @@ const CertificateStatusBadge = ({ status }: { status: CertificateStatus }) => {
   }[status];
 
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium
-      bg-${config.color}-500/10 text-${config.color}-400 border border-${config.color}-500/20`}>
-      <config.icon className="w-3 h-3" />
+    <span
+      className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium
+      bg-${config.color}-500/10 text-${config.color}-400 border border-${config.color}-500/20`}
+    >
+      <config.icon className="h-3 w-3" />
       {config.label}
     </span>
   );
@@ -243,14 +249,15 @@ const CertificateStatusBadge = ({ status }: { status: CertificateStatus }) => {
 ```
 
 ### KPI Cards (Dashboard)
+
 ```tsx
 // Compact KPI card — bukan besar-besar
 const KpiCard = ({ title, value, unit, trend, status }: KpiCardProps) => (
-  <div className="bg-surface border border-border rounded p-3">
-    <div className="text-xs text-secondary uppercase tracking-wider mb-1">{title}</div>
+  <div className="bg-surface border-border rounded border p-3">
+    <div className="text-secondary mb-1 text-xs uppercase tracking-wider">{title}</div>
     <div className="flex items-end gap-1">
-      <span className="text-2xl font-mono font-bold text-primary">{value}</span>
-      {unit && <span className="text-sm text-secondary mb-0.5">{unit}</span>}
+      <span className="text-primary font-mono text-2xl font-bold">{value}</span>
+      {unit && <span className="text-secondary mb-0.5 text-sm">{unit}</span>}
     </div>
     {trend && <TrendIndicator value={trend} />}
   </div>
@@ -258,18 +265,19 @@ const KpiCard = ({ title, value, unit, trend, status }: KpiCardProps) => (
 ```
 
 ### Info Panel (Detail view)
+
 ```tsx
 // Dense info panel — label: value pairs
 const InfoPanel = ({ title, fields }: InfoPanelProps) => (
-  <div className="bg-surface border border-border rounded">
-    <div className="px-3 py-2 border-b border-border">
-      <h3 className="text-sm font-semibold text-primary">{title}</h3>
+  <div className="bg-surface border-border rounded border">
+    <div className="border-border border-b px-3 py-2">
+      <h3 className="text-primary text-sm font-semibold">{title}</h3>
     </div>
-    <div className="divide-y divide-border">
+    <div className="divide-border divide-y">
       {fields.map(({ label, value }) => (
         <div key={label} className="flex items-center px-3 py-1.5">
-          <span className="text-xs text-secondary w-40 flex-shrink-0">{label}</span>
-          <span className="text-xs text-primary font-medium">{value ?? "—"}</span>
+          <span className="text-secondary w-40 flex-shrink-0 text-xs">{label}</span>
+          <span className="text-primary text-xs font-medium">{value ?? "—"}</span>
         </div>
       ))}
     </div>
@@ -336,4 +344,4 @@ Sidebar Navigation:
 
 ---
 
-*UI ini untuk maritim professional, bukan untuk konsumen umum. Kepadatan informasi adalah fitur, bukan bug.*
+_UI ini untuk maritim professional, bukan untuk konsumen umum. Kepadatan informasi adalah fitur, bukan bug._

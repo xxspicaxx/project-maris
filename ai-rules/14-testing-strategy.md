@@ -19,6 +19,7 @@ Test Pyramid untuk Maritime ERP:
 ```
 
 **Prioritas testing (berurutan):**
+
 1. Domain business rules & compliance rules
 2. Application use case handlers
 3. API endpoint integration tests
@@ -29,12 +30,14 @@ Test Pyramid untuk Maritime ERP:
 ## 14.2 Unit Testing — Domain Layer
 
 ### Aturan Unit Test
+
 - Setiap domain exception harus punya test
 - Setiap compliance rule harus punya test
 - Coverage minimum: **80%** untuk domain & application layer
 - Test file: `*.spec.ts` di sebelah file yang ditest
 
 ### Template Test Domain
+
 ```typescript
 // contexts/fleet/domain/entities/__tests__/vessel.entity.spec.ts
 
@@ -68,6 +71,7 @@ describe("Vessel Entity", () => {
 ```
 
 ### Test Compliance Business Rules
+
 ```typescript
 // contexts/crew/domain/__tests__/stcw-compliance.spec.ts
 
@@ -78,7 +82,7 @@ describe("STCW Certificate Validation", () => {
         certificates: [
           createMockCertificate({
             type: SeafarerCertType.COC,
-            expiryDate: subDays(new Date(), 1),  // Yesterday — expired
+            expiryDate: subDays(new Date(), 1), // Yesterday — expired
           }),
         ],
       });
@@ -93,13 +97,13 @@ describe("STCW Certificate Validation", () => {
 
     it("should block sign-on if required certificate is missing", () => {
       const seafarer = createMockSeafarer({
-        certificates: [],  // No certificates at all
+        certificates: [], // No certificates at all
       });
 
       const result = validateCertificatesForSignOn(seafarer, CrewRank.MASTER, new Date());
 
       expect(result.isCompliant).toBe(false);
-      expect(result.violations.some(v => v.issue === "MISSING")).toBe(true);
+      expect(result.violations.some((v) => v.issue === "MISSING")).toBe(true);
     });
 
     it("should allow sign-on if all required certificates are valid", () => {
@@ -143,32 +147,22 @@ describe("RegisterVesselHandler", () => {
   });
 
   it("should register a vessel successfully", async () => {
-    vesselRepository.findByImo.mockResolvedValue(null);  // No duplicate
+    vesselRepository.findByImo.mockResolvedValue(null); // No duplicate
     vesselRepository.save.mockResolvedValue(mockVessel);
 
-    const command = new RegisterVesselCommand(
-      createValidVesselDto(),
-      "company-id-1",
-      "user-id-1"
-    );
+    const command = new RegisterVesselCommand(createValidVesselDto(), "company-id-1", "user-id-1");
 
     const result = await handler.execute(command);
 
     expect(result.imoNumber).toBe(command.dto.imoNumber);
     expect(vesselRepository.save).toHaveBeenCalledTimes(1);
-    expect(eventEmitter.emit).toHaveBeenCalledWith(
-      expect.any(VesselRegisteredEvent)
-    );
+    expect(eventEmitter.emit).toHaveBeenCalledWith(expect.any(VesselRegisteredEvent));
   });
 
   it("should throw DuplicateImoNumberException when IMO already exists", async () => {
-    vesselRepository.findByImo.mockResolvedValue(mockVessel);  // Duplicate!
+    vesselRepository.findByImo.mockResolvedValue(mockVessel); // Duplicate!
 
-    const command = new RegisterVesselCommand(
-      createValidVesselDto(),
-      "company-id-1",
-      "user-id-1"
-    );
+    const command = new RegisterVesselCommand(createValidVesselDto(), "company-id-1", "user-id-1");
 
     await expect(handler.execute(command)).rejects.toThrow(DuplicateImoNumberException);
     expect(vesselRepository.save).not.toHaveBeenCalled();
@@ -195,7 +189,7 @@ describe("Vessel API (/api/v1/vessels)", () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    applyAllMiddleware(app);  // Pipes, filters, interceptors
+    applyAllMiddleware(app); // Pipes, filters, interceptors
     await app.init();
 
     prisma = moduleFixture.get(PrismaService);
@@ -231,7 +225,13 @@ describe("Vessel API (/api/v1/vessels)", () => {
     });
 
     it("should return 400 when IMO number format is invalid", async () => {
-      const dto = { imoNumber: "123", name: "Test", flagState: "ID", vesselType: "BULK_CARRIER", grossTonnage: 100 };
+      const dto = {
+        imoNumber: "123",
+        name: "Test",
+        flagState: "ID",
+        vesselType: "BULK_CARRIER",
+        grossTonnage: 100,
+      };
 
       const response = await request(app.getHttpServer())
         .post("/api/v1/vessels")
@@ -247,7 +247,13 @@ describe("Vessel API (/api/v1/vessels)", () => {
       // Create vessel first
       await createTestVessel(prisma, companyId, { imoNumber: "9999999" });
 
-      const dto = { imoNumber: "9999999", name: "Duplicate", flagState: "ID", vesselType: "BULK_CARRIER", grossTonnage: 100 };
+      const dto = {
+        imoNumber: "9999999",
+        name: "Duplicate",
+        flagState: "ID",
+        vesselType: "BULK_CARRIER",
+        grossTonnage: 100,
+      };
 
       const response = await request(app.getHttpServer())
         .post("/api/v1/vessels")
@@ -259,10 +265,7 @@ describe("Vessel API (/api/v1/vessels)", () => {
     });
 
     it("should return 401 without auth token", async () => {
-      await request(app.getHttpServer())
-        .post("/api/v1/vessels")
-        .send({})
-        .expect(401);
+      await request(app.getHttpServer()).post("/api/v1/vessels").send({}).expect(401);
     });
 
     it("should return 403 when user lacks vessel:create permission", async () => {
@@ -307,7 +310,11 @@ export function createMockVessel(overrides?: Partial<Vessel>): Vessel {
   return {
     id: uuid(),
     companyId: "company-test-id",
-    imoNumber: "9" + Math.floor(Math.random() * 1000000).toString().padStart(6, "0"),
+    imoNumber:
+      "9" +
+      Math.floor(Math.random() * 1000000)
+        .toString()
+        .padStart(6, "0"),
     name: "MV Test Vessel",
     flagState: "ID",
     vesselType: VesselType.BULK_CARRIER,
@@ -434,16 +441,16 @@ pnpm test:ci   # unit + integration + coverage check
 
 Setiap kali AI membuat file implementasi, WAJIB sekaligus buat test file-nya:
 
-| File Implementasi | File Test yang Harus Dibuat |
-|---|---|
-| `vessel.entity.ts` | `vessel.entity.spec.ts` |
-| `register-vessel.handler.ts` | `register-vessel.handler.spec.ts` |
-| `stcw-compliance.service.ts` | `stcw-compliance.service.spec.ts` |
-| `vessel.controller.ts` | `vessel.controller.integration.spec.ts` |
+| File Implementasi             | File Test yang Harus Dibuat                    |
+| ----------------------------- | ---------------------------------------------- |
+| `vessel.entity.ts`            | `vessel.entity.spec.ts`                        |
+| `register-vessel.handler.ts`  | `register-vessel.handler.spec.ts`              |
+| `stcw-compliance.service.ts`  | `stcw-compliance.service.spec.ts`              |
+| `vessel.controller.ts`        | `vessel.controller.integration.spec.ts`        |
 | `prisma-vessel.repository.ts` | `prisma-vessel.repository.integration.spec.ts` |
 
 **AI tidak boleh mengatakan "test bisa ditambahkan nanti".**
 
 ---
 
-*Coverage threshold di-enforce oleh CI pipeline. PR tidak akan di-merge jika coverage turun di bawah threshold.*
+_Coverage threshold di-enforce oleh CI pipeline. PR tidak akan di-merge jika coverage turun di bawah threshold._

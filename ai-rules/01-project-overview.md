@@ -6,13 +6,13 @@
 
 ## 1.1 Nama & Identitas Sistem
 
-| Atribut | Nilai |
-|---|---|
-| **Nama Sistem** | Maritime Fleet ERP |
-| **Kode Proyek** | `mf-erp` |
-| **Kategori** | Enterprise Resource Planning — Maritime Industry |
+| Atribut          | Nilai                                             |
+| ---------------- | ------------------------------------------------- |
+| **Nama Sistem**  | Maritime Fleet ERP                                |
+| **Kode Proyek**  | `mf-erp`                                          |
+| **Kategori**     | Enterprise Resource Planning — Maritime Industry  |
 | **Target Pasar** | Perusahaan pelayaran Indonesia & regional (ASEAN) |
-| **Benchmark** | DANAOS Enterprise, Sertica, Helm CONNECT |
+| **Benchmark**    | DANAOS Enterprise, Sertica, Helm CONNECT          |
 
 ---
 
@@ -30,17 +30,17 @@ Maritime Fleet ERP adalah platform manajemen armada kapal berbasis web yang dira
 
 ## 1.3 Pengguna Sistem (Personas)
 
-| Persona | Peran | Kebutuhan Utama |
-|---|---|---|
-| **Fleet Manager** | Manajer armada perusahaan | Dashboard KPI armada, laporan compliance |
-| **Ship Master** | Nakhoda kapal | Log pelayaran, laporan kejadian, permintaan suku cadang |
-| **Chief Officer** | Mualim I | Manajemen kru, sertifikasi, drill record |
-| **Port Agent** | Agen pelabuhan | Dokumen clearance, manifest |
-| **Crewing Officer** | HRD maritim | Rekrutmen, rotasi, payroll kru |
-| **Technical Superintendent** | Pengawas teknis | PMS, defect, dry dock planning |
-| **ISM / HSSEQ Manager** | Manajer keselamatan | Audit, near miss, non-conformity |
-| **Finance Officer** | Keuangan | Voyage cost, disbursement account |
-| **System Admin** | IT admin | User management, konfigurasi sistem |
+| Persona                      | Peran                     | Kebutuhan Utama                                         |
+| ---------------------------- | ------------------------- | ------------------------------------------------------- |
+| **Fleet Manager**            | Manajer armada perusahaan | Dashboard KPI armada, laporan compliance                |
+| **Ship Master**              | Nakhoda kapal             | Log pelayaran, laporan kejadian, permintaan suku cadang |
+| **Chief Officer**            | Mualim I                  | Manajemen kru, sertifikasi, drill record                |
+| **Port Agent**               | Agen pelabuhan            | Dokumen clearance, manifest                             |
+| **Crewing Officer**          | HRD maritim               | Rekrutmen, rotasi, payroll kru                          |
+| **Technical Superintendent** | Pengawas teknis           | PMS, defect, dry dock planning                          |
+| **ISM / HSSEQ Manager**      | Manajer keselamatan       | Audit, near miss, non-conformity                        |
+| **Finance Officer**          | Keuangan                  | Voyage cost, disbursement account                       |
+| **System Admin**             | IT admin                  | User management, konfigurasi sistem                     |
 
 ---
 
@@ -134,14 +134,14 @@ AI **wajib** memahami dan menerapkan prinsip berikut dalam setiap keputusan:
 
 ## 1.8 Referensi Sistem Benchmark
 
-| Sistem | Vendor | Yang Dipelajari |
-|---|---|---|
-| **DANAOS Enterprise** | Danaos Corp | UI density, modul struktur, workflow |
-| **Sertica** | Logimatic | PMS, maintenance workflow |
-| **Helm CONNECT** | Helm Operations | UX maritim, crew management |
-| **AMOS** | Bass Software | Technical management depth |
-| **MarinerPlus** | — | Crewing module structure |
+| Sistem                | Vendor          | Yang Dipelajari                      |
+| --------------------- | --------------- | ------------------------------------ |
+| **DANAOS Enterprise** | Danaos Corp     | UI density, modul struktur, workflow |
+| **Sertica**           | Logimatic       | PMS, maintenance workflow            |
+| **Helm CONNECT**      | Helm Operations | UX maritim, crew management          |
+| **AMOS**              | Bass Software   | Technical management depth           |
+| **MarinerPlus**       | —               | Crewing module structure             |
 
 ---
 
-*File ini adalah konteks bisnis tertinggi. Jangan build fitur yang tidak ada di modul 1.5 tanpa konfirmasi eksplisit.*
+_File ini adalah konteks bisnis tertinggi. Jangan build fitur yang tidak ada di modul 1.5 tanpa konfirmasi eksplisit._

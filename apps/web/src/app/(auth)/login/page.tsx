@@ -1,17 +1,18 @@
 "use client";
 
-import { useLogin } from "@/hooks/use-auth";
-import { ApiError } from "@/services/api.client";
 import { Ship } from "lucide-react";
 import { useState } from "react";
 
-export default function LoginPage() {
+import { useLogin } from "@/hooks/use-auth";
+import { ApiError } from "@/services/api.client";
+
+export default function LoginPage(): React.JSX.Element {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const loginMutation = useLogin();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setError("");
 

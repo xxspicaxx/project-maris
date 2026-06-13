@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { CompanyType } from "../enums";
 
 export const createCompanySchema = z.object({

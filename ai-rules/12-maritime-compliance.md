@@ -45,14 +45,15 @@ Indonesia National:
 ## 12.2 ISM Code — Business Rules
 
 ### Document of Compliance (DOC)
+
 ```typescript
 interface DocComplianceRule {
   // DOC dikeluarkan untuk perusahaan (company level)
   // Berlaku 5 tahun dengan annual verification
-  validity: 5;                          // Years
+  validity: 5; // Years
   annualVerificationWindow: {
-    from: 3,                            // Months before anniversary
-    to: 3,                              // Months after anniversary
+    from: 3; // Months before anniversary
+    to: 3; // Months after anniversary
   };
   // Kapal tidak boleh beroperasi jika DOC expired
   blockVesselOperation: true;
@@ -60,16 +61,22 @@ interface DocComplianceRule {
 
 // Validasi saat vessel akan di-assign voyage
 function validateDocForVoyage(company: Company): ValidationResult {
-  const doc = company.certificates.find(c => c.type === "DOC");
+  const doc = company.certificates.find((c) => c.type === "DOC");
 
   if (!doc) {
-    return { valid: false, error: "DOC_NOT_FOUND",
-      message: "Perusahaan belum memiliki Document of Compliance" };
+    return {
+      valid: false,
+      error: "DOC_NOT_FOUND",
+      message: "Perusahaan belum memiliki Document of Compliance",
+    };
   }
 
   if (doc.status === CertificateStatus.EXPIRED) {
-    return { valid: false, error: "DOC_EXPIRED",
-      message: "Document of Compliance telah kadaluarsa. Kapal tidak dapat beroperasi." };
+    return {
+      valid: false,
+      error: "DOC_EXPIRED",
+      message: "Document of Compliance telah kadaluarsa. Kapal tidak dapat beroperasi.",
+    };
   }
 
   return { valid: true };
@@ -77,11 +84,12 @@ function validateDocForVoyage(company: Company): ValidationResult {
 ```
 
 ### Safety Management Certificate (SMC)
+
 ```typescript
 interface SmcComplianceRule {
   // SMC dikeluarkan untuk kapal (vessel level)
-  validity: 5;                          // Years
-  interimValidity: 6;                   // Months (untuk kapal baru)
+  validity: 5; // Years
+  interimValidity: 6; // Months (untuk kapal baru)
   annualVerificationRequired: true;
 
   // SMC hanya valid jika DOC perusahaan juga valid
@@ -104,16 +112,15 @@ interface ManningSafetyRule {
 // Business rule: validasi manning sebelum voyage departure
 async function validateManningSafety(
   vesselId: string,
-  departureDate: Date
+  departureDate: Date,
 ): Promise<ManningSafetyResult> {
-
   const vessel = await vesselRepo.findById(vesselId);
   const minimumManning = vessel.minimumSafeManning;
   const activeCrew = await crewRepo.findActiveOnBoard(vesselId, departureDate);
 
   // Cek jumlah minimum per departemen
-  const deckOfficers = activeCrew.filter(c => isDeckOfficer(c.rank));
-  const engineOfficers = activeCrew.filter(c => isEngineOfficer(c.rank));
+  const deckOfficers = activeCrew.filter((c) => isDeckOfficer(c.rank));
+  const engineOfficers = activeCrew.filter((c) => isEngineOfficer(c.rank));
 
   const violations: ManningSafetyViolation[] = [];
 
@@ -122,7 +129,7 @@ async function validateManningSafety(
       department: "DECK",
       required: minimumManning.deckOfficers,
       available: deckOfficers.length,
-      message: `Kekurangan ${minimumManning.deckOfficers - deckOfficers.length} perwira dek`
+      message: `Kekurangan ${minimumManning.deckOfficers - deckOfficers.length} perwira dek`,
     });
   }
 
@@ -131,13 +138,13 @@ async function validateManningSafety(
       department: "ENGINE",
       required: minimumManning.engineOfficers,
       available: engineOfficers.length,
-      message: `Kekurangan ${minimumManning.engineOfficers - engineOfficers.length} perwira mesin`
+      message: `Kekurangan ${minimumManning.engineOfficers - engineOfficers.length} perwira mesin`,
     });
   }
 
   return {
     isCompliant: violations.length === 0,
-    violations
+    violations,
   };
 }
 ```
@@ -148,7 +155,7 @@ async function validateManningSafety(
 // Sertifikat minimum per jabatan (STCW 2010)
 const REQUIRED_CERTIFICATES_BY_RANK: Record<CrewRank, SeafarerCertType[]> = {
   [CrewRank.MASTER]: [
-    SeafarerCertType.COC,               // Master CoC
+    SeafarerCertType.COC, // Master CoC
     SeafarerCertType.STCW_BST,
     SeafarerCertType.STCW_SCRFA,
     SeafarerCertType.STCW_AFF,
@@ -157,7 +164,7 @@ const REQUIRED_CERTIFICATES_BY_RANK: Record<CrewRank, SeafarerCertType[]> = {
     SeafarerCertType.SEAMAN_BOOK,
   ],
   [CrewRank.CHIEF_OFFICER]: [
-    SeafarerCertType.COC,               // Chief Officer CoC
+    SeafarerCertType.COC, // Chief Officer CoC
     SeafarerCertType.STCW_BST,
     SeafarerCertType.STCW_SCRFA,
     SeafarerCertType.STCW_AFF,
@@ -166,7 +173,7 @@ const REQUIRED_CERTIFICATES_BY_RANK: Record<CrewRank, SeafarerCertType[]> = {
     SeafarerCertType.SEAMAN_BOOK,
   ],
   [CrewRank.CHIEF_ENGINEER]: [
-    SeafarerCertType.COC,               // Chief Engineer CoC
+    SeafarerCertType.COC, // Chief Engineer CoC
     SeafarerCertType.STCW_BST,
     SeafarerCertType.STCW_SCRFA,
     SeafarerCertType.STCW_AFF,
@@ -174,7 +181,7 @@ const REQUIRED_CERTIFICATES_BY_RANK: Record<CrewRank, SeafarerCertType[]> = {
     SeafarerCertType.SEAMAN_BOOK,
   ],
   [CrewRank.ABLE_SEAMAN]: [
-    SeafarerCertType.COP,               // AB CoP
+    SeafarerCertType.COP, // AB CoP
     SeafarerCertType.STCW_BST,
     SeafarerCertType.STCW_SCRFA,
     SeafarerCertType.MEDICAL_CERTIFICATE,
@@ -187,19 +194,19 @@ const REQUIRED_CERTIFICATES_BY_RANK: Record<CrewRank, SeafarerCertType[]> = {
 function validateCertificatesForSignOn(
   seafarer: Seafarer,
   rank: CrewRank,
-  signOnDate: Date
+  signOnDate: Date,
 ): CertificateValidationResult {
   const requiredCerts = REQUIRED_CERTIFICATES_BY_RANK[rank];
   const violations: CertViolation[] = [];
 
   for (const certType of requiredCerts) {
-    const cert = seafarer.certificates.find(c => c.certificateType === certType);
+    const cert = seafarer.certificates.find((c) => c.certificateType === certType);
 
     if (!cert) {
       violations.push({
         certType,
         issue: "MISSING",
-        message: `Sertifikat ${certType} tidak ditemukan`
+        message: `Sertifikat ${certType} tidak ditemukan`,
       });
       continue;
     }
@@ -208,14 +215,14 @@ function validateCertificatesForSignOn(
       violations.push({
         certType,
         issue: "EXPIRED",
-        message: `Sertifikat ${certType} telah kadaluarsa pada ${formatDate(cert.expiryDate)}`
+        message: `Sertifikat ${certType} telah kadaluarsa pada ${formatDate(cert.expiryDate)}`,
       });
     }
   }
 
   return {
     isCompliant: violations.length === 0,
-    violations
+    violations,
   };
 }
 ```
@@ -229,10 +236,10 @@ function validateCertificatesForSignOn(
 const REST_HOURS_RULES = {
   // Minimum rest: 10 jam dalam 24 jam
   // ATAU minimum 77 jam dalam 7 hari
-  minimumRestPer24h: 10,      // hours
-  maximumWorkPer24h: 14,      // hours
-  minimumRestPer7days: 77,    // hours
-  maximumWorkPer7days: 91,    // hours (168 - 77)
+  minimumRestPer24h: 10, // hours
+  maximumWorkPer24h: 14, // hours
+  minimumRestPer7days: 77, // hours
+  maximumWorkPer7days: 91, // hours (168 - 77)
 
   // Pembagian rest minimum 10 jam:
   // Boleh dibagi max 2 periode, salah satunya min 6 jam
@@ -258,6 +265,7 @@ interface RestHoursViolation {
 ## 12.5 MARPOL — Pollution Prevention
 
 ### Oil Record Book (MARPOL Annex I)
+
 ```typescript
 // Setiap kapal >400 GT wajib maintain Oil Record Book
 // Setiap pembuangan ballast/bilge wajib dicatat
@@ -279,10 +287,10 @@ interface OilRecordEntry {
   vesselId: string;
   date: DateTime;
   operation: OilRecordOperation;
-  position?: string;            // Lat/Long jika di laut
-  portName?: string;            // Jika di pelabuhan
-  quantity?: number;            // Liter/m³
-  retention?: string;           // Deskripsi retensi
+  position?: string; // Lat/Long jika di laut
+  portName?: string; // Jika di pelabuhan
+  quantity?: number; // Liter/m³
+  retention?: string; // Deskripsi retensi
   remarks: string;
   signedByMaster: boolean;
   masterSignatureAt?: DateTime;
@@ -290,6 +298,7 @@ interface OilRecordEntry {
 ```
 
 ### Garbage Management Plan (MARPOL Annex V)
+
 ```typescript
 enum GarbeeCategory {
   PLASTICS = "A",
@@ -318,7 +327,7 @@ interface PscInspection {
   companyId: string;
   inspectionDate: DateTime;
   port: string;
-  portStateCountry: string;           // ISO 3166-1 alpha-2
+  portStateCountry: string; // ISO 3166-1 alpha-2
   pscOfficer: string;
   inspectionType: PscInspectionType;
   result: PscResult;
@@ -344,17 +353,17 @@ enum PscResult {
 interface PscDeficiency {
   id: string;
   inspectionId: string;
-  deficiencyCode: string;             // IMO deficiency code
+  deficiencyCode: string; // IMO deficiency code
   description: string;
-  actionCode: string;                 // Action taken
+  actionCode: string; // Action taken
   isRectified: boolean;
   rectifiedAt?: DateTime;
   rectifiedPort?: string;
-  evidence?: string;                  // URL dokumen bukti perbaikan
+  evidence?: string; // URL dokumen bukti perbaikan
 }
 
 // Alert jika kapal sering kena PSC (>3x dalam 12 bulan = high risk)
-const PSC_HIGH_RISK_THRESHOLD = 3;   // Deficiencies per 12 months
+const PSC_HIGH_RISK_THRESHOLD = 3; // Deficiencies per 12 months
 ```
 
 ---
@@ -362,6 +371,7 @@ const PSC_HIGH_RISK_THRESHOLD = 3;   // Deficiencies per 12 months
 ## 12.7 Certificate Expiry Alert System
 
 ### Alert Thresholds
+
 ```typescript
 const CERT_ALERT_THRESHOLDS = {
   VESSEL: {
@@ -374,13 +384,14 @@ const CERT_ALERT_THRESHOLDS = {
   SEAFARER: {
     COC: { warning: 90, critical: 30 },
     BST: { warning: 90, critical: 30 },
-    MEDICAL: { warning: 60, critical: 30 },     // Medical lebih pendek
+    MEDICAL: { warning: 60, critical: 30 }, // Medical lebih pendek
     SEAMAN_BOOK: { warning: 180, critical: 90 }, // Seaman book lebih panjang
   },
 };
 ```
 
 ### Cron Job — Daily Expiry Check
+
 ```typescript
 // Jalankan setiap hari pukul 06:00 WIB
 @Cron("0 6 * * *", { timeZone: "Asia/Jakarta" })
@@ -430,11 +441,11 @@ KPI yang wajib tampil di dashboard compliance:
 interface ComplianceKpis {
   // Vessel Compliance
   totalVessels: number;
-  vesselsFullyCompliant: number;          // Semua cert valid
-  vesselsWithExpiringSoon: number;        // Ada cert < 90 hari
-  vesselsWithCritical: number;            // Ada cert < 30 hari
-  vesselsWithExpired: number;             // Ada cert expired
-  complianceRate: number;                 // % vessels fully compliant
+  vesselsFullyCompliant: number; // Semua cert valid
+  vesselsWithExpiringSoon: number; // Ada cert < 90 hari
+  vesselsWithCritical: number; // Ada cert < 30 hari
+  vesselsWithExpired: number; // Ada cert expired
+  complianceRate: number; // % vessels fully compliant
 
   // Crew Compliance
   totalSeafarers: number;
@@ -446,7 +457,7 @@ interface ComplianceKpis {
   pscInspectionsLast12Months: number;
   pscDetentionsLast12Months: number;
   pscDeficienciesLast12Months: number;
-  pscDetentionRate: number;               // % dari total inspeksi
+  pscDetentionRate: number; // % dari total inspeksi
 
   // ISM
   openNonConformities: number;
@@ -461,23 +472,20 @@ interface ComplianceKpis {
 
 Business rules yang mem-BLOCK operasi jika ada violation:
 
-| Kondisi | Blokir Operasi | Level |
-|---|---|---|
-| SMC expired | ❌ Kapal tidak boleh berangkat | HARD BLOCK |
-| DOC expired | ❌ Kapal tidak boleh berangkat | HARD BLOCK |
-| ISSC expired | ❌ Kapal tidak boleh memasuki port tertentu | HARD BLOCK |
-| Master CoC expired | ❌ Sign-on tidak diizinkan | HARD BLOCK |
-| Manning di bawah minimum | ❌ Voyage tidak bisa diapprove | HARD BLOCK |
-| SMC critical (< 30 hari) | ⚠️ Warning, butuh approval manager | SOFT BLOCK |
-| Crew cert expired | ⚠️ Sign-on butuh justifikasi | SOFT BLOCK |
-| PSC detained | ❌ Kapal tidak bisa berangkat | HARD BLOCK |
+| Kondisi                  | Blokir Operasi                              | Level      |
+| ------------------------ | ------------------------------------------- | ---------- |
+| SMC expired              | ❌ Kapal tidak boleh berangkat              | HARD BLOCK |
+| DOC expired              | ❌ Kapal tidak boleh berangkat              | HARD BLOCK |
+| ISSC expired             | ❌ Kapal tidak boleh memasuki port tertentu | HARD BLOCK |
+| Master CoC expired       | ❌ Sign-on tidak diizinkan                  | HARD BLOCK |
+| Manning di bawah minimum | ❌ Voyage tidak bisa diapprove              | HARD BLOCK |
+| SMC critical (< 30 hari) | ⚠️ Warning, butuh approval manager          | SOFT BLOCK |
+| Crew cert expired        | ⚠️ Sign-on butuh justifikasi                | SOFT BLOCK |
+| PSC detained             | ❌ Kapal tidak bisa berangkat               | HARD BLOCK |
 
 ```typescript
 // Implementasi blocking di application layer
-async function approveVoyageDeparture(
-  voyageId: string,
-  approvedBy: RequestUser
-): Promise<void> {
+async function approveVoyageDeparture(voyageId: string, approvedBy: RequestUser): Promise<void> {
   const voyage = await this.voyageRepo.findById(voyageId);
   const vessel = await this.vesselRepo.findById(voyage.vesselId);
 
@@ -489,14 +497,14 @@ async function approveVoyageDeparture(
     this.validatePscStatus(vessel.id),
   ]);
 
-  const hardBlocks = checks.flatMap(c => c.violations.filter(v => v.level === "HARD"));
+  const hardBlocks = checks.flatMap((c) => c.violations.filter((v) => v.level === "HARD"));
 
   if (hardBlocks.length > 0) {
     throw new ComplianceBlockException(hardBlocks);
   }
 
   // Soft blocks hanya log warning
-  const softBlocks = checks.flatMap(c => c.violations.filter(v => v.level === "SOFT"));
+  const softBlocks = checks.flatMap((c) => c.violations.filter((v) => v.level === "SOFT"));
   if (softBlocks.length > 0) {
     await this.auditService.log({ action: "COMPLIANCE_WARNING", details: softBlocks });
   }
@@ -507,4 +515,4 @@ async function approveVoyageDeparture(
 
 ---
 
-*Setiap business rule compliance yang baru ditemukan dari regulasi harus segera ditambahkan ke file ini dan diimplementasikan di domain layer.*
+_Setiap business rule compliance yang baru ditemukan dari regulasi harus segera ditambahkan ke file ini dan diimplementasikan di domain layer._

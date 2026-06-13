@@ -7,6 +7,7 @@
 ## 8.1 Authentication Flow
 
 ### Login Flow
+
 ```
 1. POST /api/v1/auth/login  { email, password }
 2. Server: validate credentials → bcrypt compare
@@ -17,6 +18,7 @@
 ```
 
 ### Token Refresh Flow
+
 ```
 1. AccessToken expired → client terima 401
 2. POST /api/v1/auth/refresh  (refreshToken dari cookie)
@@ -25,12 +27,13 @@
 ```
 
 ### JWT Payload
+
 ```typescript
 interface JwtPayload {
-  sub: string;          // userId
+  sub: string; // userId
   email: string;
-  companyId: string;    // Tenant identifier
-  roles: string[];      // Role names
+  companyId: string; // Tenant identifier
+  roles: string[]; // Role names
   iat: number;
   exp: number;
 }
@@ -69,70 +72,70 @@ Format: `resource:action` | ✅ = allowed | ❌ = denied | 🔒 = own data only 
 
 ### Fleet Management
 
-| Permission | Super Admin | Company Admin | Fleet Manager | Master | Chief Officer | Technical Super | Port Agent |
-|---|---|---|---|---|---|---|---|
-| `vessel:create` | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| `vessel:read` | ✅ | ✅ | ✅ | 🚢 | 🚢 | ✅ | 🚢 |
-| `vessel:update` | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ |
-| `vessel:delete` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| `vessel:certificate:manage` | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ |
+| Permission                  | Super Admin | Company Admin | Fleet Manager | Master | Chief Officer | Technical Super | Port Agent |
+| --------------------------- | ----------- | ------------- | ------------- | ------ | ------------- | --------------- | ---------- |
+| `vessel:create`             | ✅          | ✅            | ✅            | ❌     | ❌            | ❌              | ❌         |
+| `vessel:read`               | ✅          | ✅            | ✅            | 🚢     | 🚢            | ✅              | 🚢         |
+| `vessel:update`             | ✅          | ✅            | ✅            | ❌     | ❌            | ✅              | ❌         |
+| `vessel:delete`             | ✅          | ✅            | ❌            | ❌     | ❌            | ❌              | ❌         |
+| `vessel:certificate:manage` | ✅          | ✅            | ✅            | ❌     | ❌            | ✅              | ❌         |
 
 ### Crew Management
 
-| Permission | Super Admin | Company Admin | Fleet Manager | Crewing Manager | Master | Chief Officer | Port Agent |
-|---|---|---|---|---|---|---|---|
-| `crew:create` | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| `crew:read` | ✅ | ✅ | ✅ | ✅ | 🚢 | 🚢 | ❌ |
-| `crew:update` | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| `crew:sign_on` | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| `crew:sign_off` | ✅ | ✅ | ❌ | ✅ | ✅ | ❌ | ❌ |
-| `crew:certificate:manage` | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Permission                | Super Admin | Company Admin | Fleet Manager | Crewing Manager | Master | Chief Officer | Port Agent |
+| ------------------------- | ----------- | ------------- | ------------- | --------------- | ------ | ------------- | ---------- |
+| `crew:create`             | ✅          | ✅            | ❌            | ✅              | ❌     | ❌            | ❌         |
+| `crew:read`               | ✅          | ✅            | ✅            | ✅              | 🚢     | 🚢            | ❌         |
+| `crew:update`             | ✅          | ✅            | ❌            | ✅              | ❌     | ❌            | ❌         |
+| `crew:sign_on`            | ✅          | ✅            | ❌            | ✅              | ❌     | ❌            | ❌         |
+| `crew:sign_off`           | ✅          | ✅            | ❌            | ✅              | ✅     | ❌            | ❌         |
+| `crew:certificate:manage` | ✅          | ✅            | ❌            | ✅              | ❌     | ❌            | ❌         |
 
 ### Voyage Management
 
-| Permission | Super Admin | Company Admin | Fleet Manager | Master | Chief Officer | Port Agent |
-|---|---|---|---|---|---|---|
-| `voyage:create` | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| `voyage:read` | ✅ | ✅ | ✅ | 🚢 | 🚢 | 🚢 |
-| `voyage:update` | ✅ | ✅ | ✅ | 🚢 | ❌ | ❌ |
-| `voyage:log:create` | ✅ | ✅ | ❌ | 🚢 | 🚢 | ❌ |
-| `voyage:complete` | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Permission          | Super Admin | Company Admin | Fleet Manager | Master | Chief Officer | Port Agent |
+| ------------------- | ----------- | ------------- | ------------- | ------ | ------------- | ---------- |
+| `voyage:create`     | ✅          | ✅            | ✅            | ❌     | ❌            | ❌         |
+| `voyage:read`       | ✅          | ✅            | ✅            | 🚢     | 🚢            | 🚢         |
+| `voyage:update`     | ✅          | ✅            | ✅            | 🚢     | ❌            | ❌         |
+| `voyage:log:create` | ✅          | ✅            | ❌            | 🚢     | 🚢            | ❌         |
+| `voyage:complete`   | ✅          | ✅            | ✅            | ❌     | ❌            | ❌         |
 
 ### Technical / PMS
 
-| Permission | Super Admin | Company Admin | Technical Super | Chief Engineer | Master |
-|---|---|---|---|---|---|
-| `pms:create` | ✅ | ✅ | ✅ | ❌ | ❌ |
-| `pms:read` | ✅ | ✅ | ✅ | 🚢 | 🚢 |
-| `pms:workorder:create` | ✅ | ✅ | ✅ | 🚢 | ❌ |
-| `pms:workorder:complete` | ✅ | ✅ | ✅ | 🚢 | ❌ |
-| `pms:defect:report` | ✅ | ✅ | ✅ | 🚢 | 🚢 |
+| Permission               | Super Admin | Company Admin | Technical Super | Chief Engineer | Master |
+| ------------------------ | ----------- | ------------- | --------------- | -------------- | ------ |
+| `pms:create`             | ✅          | ✅            | ✅              | ❌             | ❌     |
+| `pms:read`               | ✅          | ✅            | ✅              | 🚢             | 🚢     |
+| `pms:workorder:create`   | ✅          | ✅            | ✅              | 🚢             | ❌     |
+| `pms:workorder:complete` | ✅          | ✅            | ✅              | 🚢             | ❌     |
+| `pms:defect:report`      | ✅          | ✅            | ✅              | 🚢             | 🚢     |
 
 ### Documents
 
-| Permission | Super Admin | Company Admin | Fleet Manager | Master | Chief Officer | Port Agent |
-|---|---|---|---|---|---|---|
-| `document:upload` | ✅ | ✅ | ✅ | 🚢 | 🚢 | ❌ |
-| `document:read` | ✅ | ✅ | ✅ | 🚢 | 🚢 | 🚢 |
-| `document:delete` | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Permission        | Super Admin | Company Admin | Fleet Manager | Master | Chief Officer | Port Agent |
+| ----------------- | ----------- | ------------- | ------------- | ------ | ------------- | ---------- |
+| `document:upload` | ✅          | ✅            | ✅            | 🚢     | 🚢            | ❌         |
+| `document:read`   | ✅          | ✅            | ✅            | 🚢     | 🚢            | 🚢         |
+| `document:delete` | ✅          | ✅            | ✅            | ❌     | ❌            | ❌         |
 
 ### HSSEQ
 
-| Permission | Super Admin | Company Admin | ISM Manager | Master | Chief Officer | All Crew |
-|---|---|---|---|---|---|---|
-| `hsseq:incident:report` | ✅ | ✅ | ✅ | 🚢 | 🚢 | 🚢 |
-| `hsseq:incident:investigate` | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| `hsseq:audit:conduct` | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| `hsseq:drill:record` | ✅ | ✅ | ✅ | 🚢 | 🚢 | ❌ |
+| Permission                   | Super Admin | Company Admin | ISM Manager | Master | Chief Officer | All Crew |
+| ---------------------------- | ----------- | ------------- | ----------- | ------ | ------------- | -------- |
+| `hsseq:incident:report`      | ✅          | ✅            | ✅          | 🚢     | 🚢            | 🚢       |
+| `hsseq:incident:investigate` | ✅          | ✅            | ✅          | ❌     | ❌            | ❌       |
+| `hsseq:audit:conduct`        | ✅          | ✅            | ✅          | ❌     | ❌            | ❌       |
+| `hsseq:drill:record`         | ✅          | ✅            | ✅          | 🚢     | 🚢            | ❌       |
 
 ### Administration
 
-| Permission | Super Admin | Company Admin |
-|---|---|---|
-| `user:manage` | ✅ | ✅ (own company) |
-| `role:manage` | ✅ | ❌ |
-| `company:manage` | ✅ | 🔒 |
-| `system:config` | ✅ | ❌ |
+| Permission       | Super Admin | Company Admin    |
+| ---------------- | ----------- | ---------------- |
+| `user:manage`    | ✅          | ✅ (own company) |
+| `role:manage`    | ✅          | ❌               |
+| `company:manage` | ✅          | 🔒               |
+| `system:config`  | ✅          | ❌               |
 
 ---
 
@@ -158,12 +161,12 @@ export class RbacGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
-      PERMISSIONS_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(PERMISSIONS_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
-    if (!requiredPermissions?.length) return true;  // Public endpoint
+    if (!requiredPermissions?.length) return true; // Public endpoint
 
     const request = context.switchToHttp().getRequest();
     const user: RequestUser = request.user;
@@ -173,7 +176,7 @@ export class RbacGuard implements CanActivate {
       user.userId,
       user.companyId,
       requiredPermissions,
-      request.params?.vesselId  // Untuk vessel-scoped permissions
+      request.params?.vesselId, // Untuk vessel-scoped permissions
     );
   }
 }
@@ -215,7 +218,7 @@ export interface RequestUser {
   companyId: string;
   roles: string[];
   permissions: string[];
-  vesselIds?: string[];     // Vessel yang bisa diakses (untuk vessel-scoped role)
+  vesselIds?: string[]; // Vessel yang bisa diakses (untuk vessel-scoped role)
   isSuperAdmin: boolean;
 }
 ```
@@ -231,8 +234,8 @@ const passwordPolicy = {
   requireLowercase: true,
   requireNumbers: true,
   requireSpecialChars: true,
-  maxAge: 90,              // Hari — wajib ganti setelah 90 hari
-  historyCount: 5,         // Tidak boleh pakai 5 password terakhir
+  maxAge: 90, // Hari — wajib ganti setelah 90 hari
+  historyCount: 5, // Tidak boleh pakai 5 password terakhir
 };
 
 // Regex validasi
@@ -263,6 +266,7 @@ model RefreshToken {
 ```
 
 **Token revocation triggers:**
+
 - User logout
 - Password changed
 - Role changed
@@ -307,4 +311,4 @@ async findVoyagesByVessel(vesselId: string, user: RequestUser): Promise<Voyage[]
 
 ---
 
-*RBAC adalah business-critical. Tidak ada pengecualian pada permission check. Semua bypass harus melalui review.*
+_RBAC adalah business-critical. Tidak ada pengecualian pada permission check. Semua bypass harus melalui review._

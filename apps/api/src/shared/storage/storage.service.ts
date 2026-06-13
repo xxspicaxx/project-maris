@@ -1,6 +1,6 @@
-import { Injectable, Logger, type OnModuleInit } from "@nestjs/common";
-import { type ConfigService } from "@nestjs/config";
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { Injectable, Logger, type OnModuleInit } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class StorageService implements OnModuleInit {

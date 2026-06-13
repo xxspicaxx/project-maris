@@ -1,17 +1,19 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
 export interface ApiResponse<T> {
   success: true;
   data: T;
   message: string;
-  meta?: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-  };
+  meta?: PaginationMeta;
   timestamp: string;
   requestId: string;
 }

@@ -16,7 +16,7 @@ export interface LoginResponse {
 }
 
 export const authService = {
-  login: async (email: string, password: string) => {
+  login: async (email: string, password: string): Promise<LoginResponse> => {
     const response = (await apiClient.post("/auth/login", {
       email,
       password,
@@ -30,16 +30,19 @@ export const authService = {
     firstName: string;
     lastName: string;
     companyId: string;
-  }) => {
-    const response = (await apiClient.post("/auth/register", data)) as unknown as ApiResponse<unknown>;
+  }): Promise<unknown> => {
+    const response = (await apiClient.post(
+      "/auth/register",
+      data,
+    )) as unknown as ApiResponse<unknown>;
     return response.data;
   },
 
-  logout: async () => {
+  logout: async (): Promise<void> => {
     await apiClient.post("/auth/logout");
   },
 
-  getProfile: async () => {
+  getProfile: async (): Promise<LoginResponse["user"]> => {
     const response = (await apiClient.get("/auth/profile")) as unknown as ApiResponse<
       LoginResponse["user"]
     >;

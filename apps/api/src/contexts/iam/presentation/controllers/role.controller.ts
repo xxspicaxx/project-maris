@@ -14,12 +14,13 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { type Request } from "express";
+
 import { Audit } from "../../../../shared/decorators/audit.decorator";
 import { Permissions } from "../../../../shared/decorators/permissions.decorator";
 import { JwtAuthGuard } from "../../../../shared/guards/jwt-auth.guard";
 import { RbacGuard } from "../../../../shared/guards/rbac.guard";
 import { ApiResponseHelper } from "../../../../shared/utils/api-response.helper";
-import { type RoleService } from "../../application/services/role.service";
+import { RoleService } from "../../application/services/role.service";
 
 @ApiTags("System Admin — Roles")
 @ApiBearerAuth()

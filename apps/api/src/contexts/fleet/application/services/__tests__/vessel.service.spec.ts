@@ -1,11 +1,12 @@
 import { Test, type TestingModule } from "@nestjs/testing";
-import { VesselService } from "../vessel.service";
-import { PrismaService } from "../../../../../shared/database/prisma.service";
+
 import { createMockVessel } from "../../../../../../test/factories/vessel.factory";
+import { PrismaService } from "../../../../../shared/database/prisma.service";
 import {
   DuplicateImoNumberException,
   VesselNotFoundException,
 } from "../../../domain/exceptions/vessel.exception";
+import { VesselService } from "../vessel.service";
 
 describe("VesselService", () => {
   let service: VesselService;

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { type Prisma, type VesselCertType, type CertificateStatus } from "@prisma/client";
-import { type PrismaService } from "../../../../shared/database/prisma.service";
+
+import { PrismaService } from "../../../../shared/database/prisma.service";
 import {
   CertificateNotFoundException,
   VesselNotFoundException,

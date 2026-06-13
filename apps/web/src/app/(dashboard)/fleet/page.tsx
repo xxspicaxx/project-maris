@@ -1,10 +1,11 @@
 "use client";
 
-import { useVessels } from "@/hooks/use-vessels";
-import type { Vessel } from "@/services/fleet.service";
 import { Plus, Search, Ship } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+
+import { useVessels } from "@/hooks/use-vessels";
+import type { Vessel } from "@/services/fleet.service";
 
 const statusColors: Record<string, string> = {
   ACTIVE: "text-[var(--color-vessel-active)]",
@@ -22,7 +23,7 @@ const statusLabels: Record<string, string> = {
   SOLD: "Terjual",
 };
 
-export default function FleetPage() {
+export default function FleetPage(): React.JSX.Element {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const { data, isLoading } = useVessels({ page, limit: 20, search: search || undefined });

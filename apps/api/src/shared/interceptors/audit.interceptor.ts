@@ -5,11 +5,12 @@ import {
   Logger,
   type NestInterceptor,
 } from "@nestjs/common";
-import { type Reflector } from "@nestjs/core";
+import { Reflector } from "@nestjs/core";
 import { AuditAction, type Prisma } from "@prisma/client";
 import { type Request } from "express";
 import { type Observable, tap } from "rxjs";
-import { type PrismaService } from "../database/prisma.service";
+
+import { PrismaService } from "../database/prisma.service";
 import { AUDIT_KEY, type AuditConfig } from "../decorators/audit.decorator";
 
 @Injectable()

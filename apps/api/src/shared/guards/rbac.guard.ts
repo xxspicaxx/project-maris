@@ -4,8 +4,9 @@ import {
   ForbiddenException,
   Injectable,
 } from "@nestjs/common";
-import { type Reflector } from "@nestjs/core";
-import { type PrismaService } from "../database/prisma.service";
+import { Reflector } from "@nestjs/core";
+
+import { PrismaService } from "../database/prisma.service";
 import { PERMISSIONS_KEY } from "../decorators/permissions.decorator";
 
 @Injectable()

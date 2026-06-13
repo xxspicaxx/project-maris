@@ -17,10 +17,10 @@ Baca docs/ai-rules/04-folder-structure.md section 4.3 untuk template.
 Lokasi: apps/api/src/contexts/fleet/domain/
 
 1. entities/vessel.entity.ts  (Aggregate Root)
-   
+
    class Vessel {
      private constructor(props: VesselProps) {}
-     
+
      Properties (semua private, exposed via getters):
      id, companyId, imoNumber, mmsiNumber, name, callSign
      flagState, portOfRegistry, vesselType, status
@@ -29,43 +29,43 @@ Lokasi: apps/api/src/contexts/fleet/domain/
      yearBuilt, shipyard, classSociety, classNumber
      mainEngineType, mainEnginePower, fuelType
      createdAt, updatedAt, createdBy, updatedBy, deletedAt
-     
+
      Static factory:
      static create(data: CreateVesselData): Vessel
        → Validate IMO number format (7 digit: /^\d{7}$/)
        → Validate grossTonnage > 0
        → Default status: ACTIVE
        → Emit VesselRegisteredEvent
-     
+
      Business methods:
      changeStatus(newStatus: VesselStatus, changedBy: string): void
        → Validate status transition (tidak bisa ACTIVE → SCRAPPED langsung)
        → Emit VesselStatusChangedEvent
-     
+
      sendToDrydock(dockyard: string, startDate: Date): void
        → Validate status === ACTIVE
        → Change status ke DRYDOCK
-     
+
      activate(): void
      layUp(): void
-     
+
      get isOperational(): boolean
        → return status === ACTIVE
 
 2. entities/vessel-certificate.entity.ts
-   
+
    class VesselCertificate {
      static create(data): VesselCertificate
-     
+
      get expiryStatus(): CertificateStatus
        → Gunakan calculateCertificateExpiryStatus dari @shared/utils
        → Ini adalah computed property, bukan stored value
-     
+
      get daysUntilExpiry(): number
-     
+
      get isValid(): boolean
        → return expiryStatus === VALID || expiryStatus === EXPIRING_SOON
-     
+
      renew(newExpiryDate: Date, issuingAuthority: string, renewedBy: string): void
        → Emit CertificateRenewedEvent
    }
@@ -80,7 +80,7 @@ Lokasi: apps/api/src/contexts/fleet/domain/
        toString(): string
        equals(other: ImoNumber): boolean
      }
-   
+
    - vessel-status.vo.ts
      VALID_TRANSITIONS: Map<VesselStatus, VesselStatus[]>
        ACTIVE      → [DRYDOCK, LAID_UP, SOLD, SCRAPPED]
@@ -88,7 +88,7 @@ Lokasi: apps/api/src/contexts/fleet/domain/
        LAID_UP     → [ACTIVE, DRYDOCK, SCRAPPED, SOLD]
        SOLD        → []   ← Terminal state
        SCRAPPED    → []   ← Terminal state
-     
+
      static isValidTransition(from, to): boolean
 
 4. events/
@@ -115,7 +115,7 @@ Lokasi: apps/api/src/contexts/fleet/domain/
      save(vessel): Promise<Vessel>
      update(id, companyId, data, updatedBy): Promise<Vessel>
      softDelete(id, companyId, deletedBy): Promise<void>
-   
+
    - vessel-certificate.repository.interface.ts
      findByVessel(vesselId, companyId): Promise<VesselCertificate[]>
      findExpiringSoon(daysThreshold: number): Promise<VesselCertificate[]>
@@ -226,7 +226,7 @@ QUERIES:
     → Count vessels per status
     → Count certificates per expiryStatus
     → Return ComplianceSummaryDto
-    
+
     ComplianceSummaryDto:
     {
       totalVessels: number,
@@ -267,13 +267,13 @@ INFRASTRUCTURE:
 
 1. repositories/prisma-vessel.repository.ts
    Implements IVesselRepository
-   
+
    findAll() harus support:
    - Filter: status, flagState, vesselType, search (name, imoNumber)
    - Sort: name, imoNumber, createdAt, status
    - Pagination: skip/take dari page/limit
    - SELALU: where.companyId = companyId, where.deletedAt = null
-   
+
    findExpiringSoon():
    SELECT vessels yang punya certificates dengan:
    expiryDate BETWEEN today AND today+90days
@@ -297,7 +297,7 @@ INFRASTRUCTURE:
      → Log warning
      → Trigger notification (stub: console.log, real di Phase 2)
      → Update certificate status di DB
-   
+
    - vessel-registered.handler.ts
      Listen: VesselRegisteredEvent
      → Audit log entry
@@ -306,34 +306,34 @@ PRESENTATION:
 
 5. controllers/vessel.controller.ts
    Tag: "Fleet — Vessels"
-   
+
    POST   /api/v1/vessels
    @Permissions("vessel:create")
    @Audit({ resource: "vessel" })
    Body: CreateVesselDto → RegisterVesselCommand
    Response 201: VesselResponseDto
-   
+
    GET    /api/v1/vessels
    @Permissions("vessel:read")
    Query: page, limit, status, search, flagState, vesselType
    Response 200: VesselListItemDto[] + pagination meta
-   
+
    GET    /api/v1/vessels/compliance-summary
    @Permissions("vessel:read")
    Response: ComplianceSummaryDto
    PENTING: Route ini harus SEBELUM /:vesselId untuk menghindari conflict
-   
+
    GET    /api/v1/vessels/:vesselId
    @Permissions("vessel:read")
    Query: ?include=certificates,documents
    Response: VesselDetailDto
-   
+
    PATCH  /api/v1/vessels/:vesselId
    @Permissions("vessel:update")
    @Audit({ resource: "vessel", captureOld: true })
    Body: UpdateVesselDto
    Response: VesselResponseDto
-   
+
    DELETE /api/v1/vessels/:vesselId
    @Permissions("vessel:delete")
    @Audit({ resource: "vessel" })
@@ -341,46 +341,46 @@ PRESENTATION:
 
 6. controllers/vessel-certificate.controller.ts
    Tag: "Fleet — Certificates"
-   
+
    GET    /api/v1/vessels/:vesselId/certificates
    @Permissions("vessel:read")
    Response: VesselCertificateDto[]
-   
+
    POST   /api/v1/vessels/:vesselId/certificates
    @Permissions("vessel:certificate:manage")
    @Audit({ resource: "vessel_certificate" })
    Body: CreateCertificateDto
    Response 201: VesselCertificateDto
-   
+
    PATCH  /api/v1/vessels/:vesselId/certificates/:certId
    @Permissions("vessel:certificate:manage")
    @Audit({ resource: "vessel_certificate", captureOld: true })
    Body: UpdateCertificateDto
    Response: VesselCertificateDto
-   
+
    POST   /api/v1/vessels/:vesselId/certificates/:certId/renew
    @Permissions("vessel:certificate:manage")
    @Audit({ resource: "vessel_certificate", captureOld: true })
    Body: { newExpiryDate, newCertNumber?, issuingAuthority? }
    Response: VesselCertificateDto
-   
+
    DELETE /api/v1/vessels/:vesselId/certificates/:certId
    @Permissions("vessel:certificate:manage")
    Response 204
 
 7. controllers/vessel-status.controller.ts
    Tag: "Fleet — Vessel Operations"
-   
+
    POST /api/v1/vessels/:vesselId/activate
    POST /api/v1/vessels/:vesselId/drydock    Body: { dockyard, plannedStart, plannedEnd }
    POST /api/v1/vessels/:vesselId/layup      Body: { reason }
    POST /api/v1/vessels/:vesselId/reactivate
-   
+
    Semua: @Permissions("vessel:update"), @Audit({ resource: "vessel" })
 
 8. Buat integration tests:
    File: test/integration/fleet/vessel.spec.ts
-   
+
    Minimal test cases:
    ✅ POST /vessels → create sukses
    ✅ POST /vessels → 409 jika duplicate IMO
@@ -415,21 +415,21 @@ export class CertificateExpiryJob {
   @Cron("0 6 * * *", { timeZone: "Asia/Jakarta" })
   async checkVesselCertificates(): Promise<void> {
     this.logger.log("Starting daily vessel certificate expiry check...");
-    
+
     const today = new Date();
     const checkWindow = 90; // days
-    
+
     // Fetch all certs expiring dalam 90 hari ATAU sudah expired
     const certsToCheck = await this.vesselCertRepo.findExpiringSoon(checkWindow);
-    
+
     let updated = 0;
     for (const cert of certsToCheck) {
       const daysLeft = differenceInDays(cert.expiryDate, today);
       const newStatus = calculateCertificateExpiryStatus(cert.expiryDate);
-      
+
       if (cert.status !== newStatus) {
         await this.vesselCertRepo.updateStatus(cert.id, newStatus);
-        
+
         // Emit event untuk notifikasi
         if (newStatus === CertificateStatus.EXPIRING_SOON ||
             newStatus === CertificateStatus.CRITICAL ||
@@ -448,7 +448,7 @@ export class CertificateExpiryJob {
         updated++;
       }
     }
-    
+
     this.logger.log(`Certificate check complete. Updated: ${updated} certificates.`);
   }
 

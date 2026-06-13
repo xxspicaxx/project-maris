@@ -6,126 +6,135 @@
 
 ## 3.1 Core Stack
 
-| Layer | Teknologi | Versi | Alasan |
-|---|---|---|---|
-| **Frontend Framework** | Next.js | 14.x (App Router) | SSR, RSC, enterprise-ready |
-| **Backend Framework** | NestJS | 10.x | Modular, DI, enterprise patterns |
-| **Database** | PostgreSQL | 16.x | ACID, relational, enterprise |
-| **ORM** | Prisma | 5.x | Type-safe, migrations, multi-schema |
-| **Container** | Docker + Compose | latest | Reproducible environment |
-| **Language** | TypeScript | 5.x (strict) | Type safety across full stack |
+| Layer                  | Teknologi        | Versi             | Alasan                              |
+| ---------------------- | ---------------- | ----------------- | ----------------------------------- |
+| **Frontend Framework** | Next.js          | 14.x (App Router) | SSR, RSC, enterprise-ready          |
+| **Backend Framework**  | NestJS           | 10.x              | Modular, DI, enterprise patterns    |
+| **Database**           | PostgreSQL       | 16.x              | ACID, relational, enterprise        |
+| **ORM**                | Prisma           | 5.x               | Type-safe, migrations, multi-schema |
+| **Container**          | Docker + Compose | latest            | Reproducible environment            |
+| **Language**           | TypeScript       | 5.x (strict)      | Type safety across full stack       |
 
 ---
 
 ## 3.2 Frontend (Next.js)
 
 ### UI & Styling
-| Library | Versi | Kegunaan |
-|---|---|---|
-| `tailwindcss` | 3.x | Utility-first CSS |
-| `shadcn/ui` | latest | Komponen dasar (accessible, unstyled base) |
-| `radix-ui` | latest | Headless primitives (via shadcn) |
-| `lucide-react` | latest | Icon system |
-| `class-variance-authority` | latest | Component variant management |
-| `clsx` + `tailwind-merge` | latest | Conditional class merging |
+
+| Library                    | Versi  | Kegunaan                                   |
+| -------------------------- | ------ | ------------------------------------------ |
+| `tailwindcss`              | 3.x    | Utility-first CSS                          |
+| `shadcn/ui`                | latest | Komponen dasar (accessible, unstyled base) |
+| `radix-ui`                 | latest | Headless primitives (via shadcn)           |
+| `lucide-react`             | latest | Icon system                                |
+| `class-variance-authority` | latest | Component variant management               |
+| `clsx` + `tailwind-merge`  | latest | Conditional class merging                  |
 
 ### Data & State
-| Library | Versi | Kegunaan |
-|---|---|---|
-| `@tanstack/react-query` | 5.x | Server state, caching, sync |
-| `zustand` | 4.x | Client state (UI state only) |
-| `axios` | 1.x | HTTP client |
-| `zod` | 3.x | Schema validation (shared dengan backend) |
+
+| Library                 | Versi | Kegunaan                                  |
+| ----------------------- | ----- | ----------------------------------------- |
+| `@tanstack/react-query` | 5.x   | Server state, caching, sync               |
+| `zustand`               | 4.x   | Client state (UI state only)              |
+| `axios`                 | 1.x   | HTTP client                               |
+| `zod`                   | 3.x   | Schema validation (shared dengan backend) |
 
 ### Tables & Data Display
-| Library | Versi | Kegunaan |
-|---|---|---|
-| `@tanstack/react-table` | 8.x | Enterprise data tables |
-| `recharts` | 2.x | Charts & KPI visualization |
+
+| Library                 | Versi | Kegunaan                   |
+| ----------------------- | ----- | -------------------------- |
+| `@tanstack/react-table` | 8.x   | Enterprise data tables     |
+| `recharts`              | 2.x   | Charts & KPI visualization |
 
 ### Forms
-| Library | Versi | Kegunaan |
-|---|---|---|
-| `react-hook-form` | 7.x | Form management |
+
+| Library               | Versi  | Kegunaan                    |
+| --------------------- | ------ | --------------------------- |
+| `react-hook-form`     | 7.x    | Form management             |
 | `@hookform/resolvers` | latest | Zod integration untuk forms |
 
 ### Utilities
-| Library | Versi | Kegunaan |
-|---|---|---|
-| `date-fns` | 3.x | Date manipulation |
-| `dayjs` | latest | Lightweight date (untuk display) |
-| `numeral` | latest | Number formatting |
+
+| Library    | Versi  | Kegunaan                         |
+| ---------- | ------ | -------------------------------- |
+| `date-fns` | 3.x    | Date manipulation                |
+| `dayjs`    | latest | Lightweight date (untuk display) |
+| `numeral`  | latest | Number formatting                |
 
 ---
 
 ## 3.3 Backend (NestJS)
 
 ### Core NestJS Modules
-| Package | Kegunaan |
-|---|---|
-| `@nestjs/core` | Framework core |
-| `@nestjs/common` | Decorators, pipes, guards |
-| `@nestjs/config` | Environment configuration |
-| `@nestjs/jwt` | JWT authentication |
-| `@nestjs/passport` | Auth strategies |
-| `@nestjs/event-emitter` | Internal domain events |
-| `@nestjs/swagger` | API documentation |
-| `@nestjs/schedule` | Cron jobs (certificate expiry check) |
-| `@nestjs/cache-manager` | Redis caching |
-| `@nestjs/throttler` | Rate limiting |
+
+| Package                 | Kegunaan                             |
+| ----------------------- | ------------------------------------ |
+| `@nestjs/core`          | Framework core                       |
+| `@nestjs/common`        | Decorators, pipes, guards            |
+| `@nestjs/config`        | Environment configuration            |
+| `@nestjs/jwt`           | JWT authentication                   |
+| `@nestjs/passport`      | Auth strategies                      |
+| `@nestjs/event-emitter` | Internal domain events               |
+| `@nestjs/swagger`       | API documentation                    |
+| `@nestjs/schedule`      | Cron jobs (certificate expiry check) |
+| `@nestjs/cache-manager` | Redis caching                        |
+| `@nestjs/throttler`     | Rate limiting                        |
 
 ### Database & Validation
-| Package | Kegunaan |
-|---|---|
-| `@prisma/client` | Database client |
-| `prisma` | ORM & migration CLI |
-| `class-validator` | DTO validation |
-| `class-transformer` | DTO transformation |
-| `zod` | Shared schema validation |
+
+| Package             | Kegunaan                 |
+| ------------------- | ------------------------ |
+| `@prisma/client`    | Database client          |
+| `prisma`            | ORM & migration CLI      |
+| `class-validator`   | DTO validation           |
+| `class-transformer` | DTO transformation       |
+| `zod`               | Shared schema validation |
 
 ### Security & Auth
-| Package | Kegunaan |
-|---|---|
-| `bcrypt` | Password hashing |
-| `passport-jwt` | JWT strategy |
-| `passport-local` | Local auth strategy |
-| `helmet` | HTTP security headers |
+
+| Package          | Kegunaan              |
+| ---------------- | --------------------- |
+| `bcrypt`         | Password hashing      |
+| `passport-jwt`   | JWT strategy          |
+| `passport-local` | Local auth strategy   |
+| `helmet`         | HTTP security headers |
 
 ### Utilities
-| Package | Kegunaan |
-|---|---|
-| `uuid` | UUID generation |
-| `date-fns` | Date manipulation |
-| `winston` | Logging |
-| `nest-winston` | NestJS winston integration |
-| `winston-daily-rotate-file` | Daily log rotation for Winston |
-| `@aws-sdk/client-s3` | S3 SDK client for MinIO storage integration |
-| `nodemailer` | SMTP client library for emails |
+
+| Package                     | Kegunaan                                    |
+| --------------------------- | ------------------------------------------- |
+| `uuid`                      | UUID generation                             |
+| `date-fns`                  | Date manipulation                           |
+| `winston`                   | Logging                                     |
+| `nest-winston`              | NestJS winston integration                  |
+| `winston-daily-rotate-file` | Daily log rotation for Winston              |
+| `@aws-sdk/client-s3`        | S3 SDK client for MinIO storage integration |
+| `nodemailer`                | SMTP client library for emails              |
 
 ---
 
 ## 3.4 Infrastructure
 
-| Teknologi | Kegunaan |
-|---|---|
-| **Redis** | Session cache, rate limiting, pub/sub |
-| **MinIO** (S3-compatible) | File storage (dokumen, sertifikat) |
-| **Nginx** | Reverse proxy, SSL termination |
-| **Bull** (Redis-based) | Job queue (email, reports, sync) |
+| Teknologi                 | Kegunaan                              |
+| ------------------------- | ------------------------------------- |
+| **Redis**                 | Session cache, rate limiting, pub/sub |
+| **MinIO** (S3-compatible) | File storage (dokumen, sertifikat)    |
+| **Nginx**                 | Reverse proxy, SSL termination        |
+| **Bull** (Redis-based)    | Job queue (email, reports, sync)      |
 
 ---
 
 ## 3.5 Development Tools
 
-| Tool | Kegunaan |
-|---|---|
-| **ESLint** | Linting (config: `@typescript-eslint/strict`) |
-| **Prettier** | Code formatting |
-| **Husky** | Git hooks |
-| **lint-staged** | Pre-commit linting |
-| **Jest** | Unit & integration testing |
-| **Playwright** | E2E testing |
-| **Storybook** | UI component development & docs |
+| Tool            | Kegunaan                                      |
+| --------------- | --------------------------------------------- |
+| **ESLint**      | Linting (config: `@typescript-eslint/strict`) |
+| **Prettier**    | Code formatting                               |
+| **Husky**       | Git hooks                                     |
+| **lint-staged** | Pre-commit linting                            |
+| **Jest**        | Unit & integration testing                    |
+| **Playwright**  | E2E testing                                   |
+| **Storybook**   | UI component development & docs               |
 
 ---
 
@@ -215,17 +224,17 @@ NEXTAUTH_URL=http://localhost:3000
 
 ## 3.9 Library yang DILARANG (Jangan Install)
 
-| Library | Alasan |
-|---|---|
-| `moment.js` | Deprecated, besar; gunakan `date-fns` |
-| `lodash` (full) | Gunakan native ES6+ atau import per-method |
-| `jquery` | Tidak relevan dengan React |
-| `express` | Backend harus NestJS |
-| `sequelize` / `typeorm` | ORM harus Prisma |
-| `material-ui` / `antd` | UI library harus shadcn/ui |
-| `redux` | State harus Zustand + React Query |
+| Library                       | Alasan                                      |
+| ----------------------------- | ------------------------------------------- |
+| `moment.js`                   | Deprecated, besar; gunakan `date-fns`       |
+| `lodash` (full)               | Gunakan native ES6+ atau import per-method  |
+| `jquery`                      | Tidak relevan dengan React                  |
+| `express`                     | Backend harus NestJS                        |
+| `sequelize` / `typeorm`       | ORM harus Prisma                            |
+| `material-ui` / `antd`        | UI library harus shadcn/ui                  |
+| `redux`                       | State harus Zustand + React Query           |
 | `axios` di server-side NestJS | Gunakan `@nestjs/axios` atau `fetch` native |
 
 ---
 
-*Update file ini setiap kali ada keputusan penambahan library baru.*
+_Update file ini setiap kali ada keputusan penambahan library baru._

@@ -134,18 +134,18 @@ domain/services/voyage-compliance.service.ts:
   ): Promise<ComplianceCheckResult>
 
   Implement SEMUA checks dari docs/ai-rules/12-maritime-compliance.md section 12.9:
-  
+
   HARD BLOCKS (canDepart = false):
   - SMC expired → { code: "VOYAGE_SMC_EXPIRED", level: "HARD" }
   - DOC expired → { code: "VOYAGE_DOC_EXPIRED", level: "HARD" }
   - ISSC expired → { code: "VOYAGE_ISSC_EXPIRED", level: "HARD" }
   - Manning < minimum → { code: "VOYAGE_MANNING_INSUFFICIENT", level: "HARD" }
   - PSC detained → { code: "VOYAGE_VESSEL_DETAINED", level: "HARD" }
-  
+
   SOFT BLOCKS (canDepart = true dengan warning):
   - SMC critical (<30 hari) → { level: "SOFT", message: "SMC akan expired dalam X hari" }
   - IOPP critical → { level: "SOFT" }
-  
+
   Return:
   {
     canDepart: boolean,
@@ -767,7 +767,7 @@ apps/api/src/shared/notifications/notification.service.ts:
   create(dto: CreateNotificationDto): Promise<Notification>
     → Save ke DB
     → Emit ke WebSocket room user-{userId}
-  
+
   getUnread(userId, companyId): Promise<Notification[]>
   getCount(userId): Promise<number>
   markAsRead(id, userId): Promise<void>
@@ -775,14 +775,14 @@ apps/api/src/shared/notifications/notification.service.ts:
 
 apps/api/src/shared/notifications/email.service.ts:
   Gunakan Nodemailer. Development → MailHog. Production → SMTP real.
-  
+
   sendCertExpiryAlert({ recipientEmail, recipientName,
     vesselName, certType, expiryDate, daysLeft, dashboardUrl })
   sendIncidentAlert({ recipientEmail, recipientName,
     incidentNumber, vesselName, severity, title })
   sendWelcomeEmail({ email, firstName, loginUrl })
   sendPasswordReset({ email, resetLink, expiresIn })
-  
+
   HTML templates di: apps/api/src/shared/notifications/templates/
   Buat template untuk tiap email type — simple tapi professional.
   Dark header (#0d1526), company logo placeholder, clear CTA button.
@@ -817,14 +817,14 @@ apps/api/src/shared/notifications/notification.gateway.ts
 @WebSocketGateway({ namespace: "/notifications", cors: { origin: WEB_URL } })
 export class NotificationGateway {
   @WebSocketServer() server: Server;
-  
+
   handleConnection(client: Socket) {
     // Authenticate JWT dari handshake.auth.token
     // Validate token → get userId
     // Join room: user-{userId}
     // Emit pending unread count
   }
-  
+
   sendToUser(userId: string, notification: Notification) {
     this.server.to(`user-${userId}`).emit("new_notification", notification);
   }
@@ -855,10 +855,10 @@ components/layout/NotificationBell.tsx:
     │     1 jam lalu                                            │
     └──────────────────────────────────────────────────────────┘
     Footer: "Lihat Semua Notifikasi →"
-  
+
   Klik item → navigate ke resource yang relevan + mark as read
   Klik bell ketika ada notif baru → badge hilang
-  
+
   hooks/use-notifications.ts:
   - useQuery("notifications") untuk initial data
   - useEffect → init Socket.io client
@@ -1032,7 +1032,7 @@ PERFORMANCE:
    - compliance-summary per company: TTL 5 menit
      Key: "compliance:summary:{companyId}"
      Invalidate: saat ada cert status change event
-   
+
    - vessel list page 1 per company: TTL 2 menit
      Key: "vessels:list:{companyId}:p1"
      Invalidate: saat ada vessel create/update/delete
@@ -1087,7 +1087,7 @@ OBSERVABILITY:
     if (process.env.SENTRY_DSN) {
       Sentry.init({ dsn: process.env.SENTRY_DSN, environment: process.env.NODE_ENV });
     }
-    
+
     Di global exception filter:
     if (exception instanceof Error && !(exception instanceof DomainException)) {
       Sentry.captureException(exception, { extra: { userId, companyId, requestId } });

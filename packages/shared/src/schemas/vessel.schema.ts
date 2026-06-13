@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { FuelType, VesselType } from "../enums";
 
 export const createVesselSchema = z.object({

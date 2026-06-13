@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { type PrismaService } from "../../../../shared/database/prisma.service";
+
+import { PrismaService } from "../../../../shared/database/prisma.service";
 import { RoleNotFoundException } from "../../domain/exceptions/user-not-found.exception";
 
 @Injectable()

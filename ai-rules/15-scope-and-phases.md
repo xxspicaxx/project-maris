@@ -8,8 +8,8 @@
 
 ```
 ┌─────────────────────────────────────┐
-│         PHASE 1 — ACTIVE            │
-│   Foundation & Core Infrastructure  │
+│         PHASE 2 — ACTIVE            │
+│            Operations               │
 └─────────────────────────────────────┘
 ```
 
@@ -17,7 +17,7 @@ Update file ini setiap kali phase berganti.
 
 ---
 
-## 15.2 Phase 1 — Foundation (Active)
+## 15.2 Phase 1 — Foundation (Completed)
 
 **Target durasi:** 8–10 minggu  
 **Tujuan:** Sistem dapat login, manage company, manage vessels, track dokumen, dan tampilkan dashboard KPI dasar.
@@ -25,6 +25,7 @@ Update file ini setiap kali phase berganti.
 ### ✅ Yang Harus Dibangun di Phase 1
 
 #### Infrastructure
+
 - [x] Monorepo setup (Turborepo + pnpm)
 - [x] Docker Compose (PostgreSQL, Redis, MinIO, Nginx)
 - [x] NestJS bootstrap + global middleware
@@ -33,6 +34,7 @@ Update file ini setiap kali phase berganti.
 - [x] CI/CD pipeline dasar (GitHub Actions)
 
 #### IAM Module
+
 - [x] User registration & login (JWT)
 - [x] Refresh token flow
 - [x] Password reset via email
@@ -41,11 +43,13 @@ Update file ini setiap kali phase berganti.
 - [x] Audit interceptor (global)
 
 #### Company Module
+
 - [x] CRUD company
 - [x] Company settings
 - [x] Multi-company isolation (middleware)
 
 #### Fleet Module
+
 - [x] CRUD vessel
 - [x] Vessel status management (Active, Drydock, Laid-up)
 - [x] Vessel certificate tracking (CRUD)
@@ -53,17 +57,20 @@ Update file ini setiap kali phase berganti.
 - [x] Vessel document upload (PDF, image)
 
 #### Dashboard
+
 - [x] Fleet overview KPIs (total vessels, active, drydock)
 - [x] Certificate expiry summary widget
 - [x] Alert panel (critical & expiring soon)
 
 #### System
+
 - [x] Swagger documentation (semua endpoint)
 - [x] Global error handling
 - [x] Request ID tracing
 - [x] Basic logging (Winston)
 
 ### ❌ TIDAK Dibangun di Phase 1
+
 - Crew management
 - Voyage management
 - PMS / Maintenance
@@ -76,7 +83,7 @@ Update file ini setiap kali phase berganti.
 
 ---
 
-## 15.3 Phase 2 — Operations
+## 15.3 Phase 2 — Operations (Active)
 
 **Target durasi:** 10–12 minggu  
 **Prerequisite:** Phase 1 selesai dan stable di staging.
@@ -84,6 +91,7 @@ Update file ini setiap kali phase berganti.
 ### ✅ Yang Dibangun di Phase 2
 
 #### Crew Management Module
+
 - [ ] Seafarer CRUD (data pribadi, dokumen)
 - [ ] STCW certificate tracking per seafarer
 - [ ] Crew assignment (sign-on / sign-off)
@@ -93,6 +101,7 @@ Update file ini setiap kali phase berganti.
 - [ ] Crew contract management (basic)
 
 #### Voyage Management Module
+
 - [ ] Voyage planning (create, edit)
 - [ ] Port of call management
 - [ ] Voyage log (departure, arrival, noon report)
@@ -101,16 +110,19 @@ Update file ini setiap kali phase berganti.
 - [ ] Voyage status lifecycle (planned → active → completed)
 
 #### Notification System
+
 - [ ] Email notifications (certificate expiry, compliance alerts)
 - [ ] In-app notification bell
 - [ ] Notification preferences per user
 
 #### Enhanced Dashboard
+
 - [ ] Crew on board summary per vessel
 - [ ] Voyage in progress tracker
 - [ ] Manning compliance status
 
 ### ❌ TIDAK Dibangun di Phase 2
+
 - PMS / Technical module
 - HSSEQ module
 - Financial module
@@ -128,6 +140,7 @@ Update file ini setiap kali phase berganti.
 ### ✅ Yang Dibangun di Phase 3
 
 #### Technical / PMS Module
+
 - [ ] Equipment & component registry
 - [ ] Planned maintenance job (by running hours / calendar)
 - [ ] Work order management
@@ -137,6 +150,7 @@ Update file ini setiap kali phase berganti.
 - [ ] Spare parts inventory (basic)
 
 #### HSSEQ / ISM Module
+
 - [ ] Incident & near miss reporting
 - [ ] Incident investigation workflow
 - [ ] Non-conformity tracking
@@ -147,6 +161,7 @@ Update file ini setiap kali phase berganti.
 - [ ] MARPOL Oil Record Book
 
 #### MLC Compliance
+
 - [ ] Rest hours recording per seafarer
 - [ ] Rest hours violation detection & reporting
 
@@ -160,6 +175,7 @@ Update file ini setiap kali phase berganti.
 ### ✅ Yang Dibangun di Phase 4
 
 #### Financial Module
+
 - [ ] Voyage cost estimate
 - [ ] Disbursement account (port expenses)
 - [ ] Crew payroll calculation
@@ -167,6 +183,7 @@ Update file ini setiap kali phase berganti.
 - [ ] Basic financial reporting
 
 #### Procurement Module
+
 - [ ] Purchase requisition
 - [ ] Purchase order
 - [ ] Vendor management
@@ -184,12 +201,14 @@ Update file ini setiap kali phase berganti.
 ### ✅ Yang Dibangun di Phase 5
 
 #### External Integrations
+
 - [ ] AIS real-time vessel tracking
 - [ ] Port MIS integration (Indonesia)
 - [ ] BKI / Class society API
 - [ ] Weather data integration
 
 #### Advanced Features
+
 - [ ] Mobile app (React Native) — Seafarer self-service
 - [ ] Offline sync (untuk vessel di laut)
 - [ ] Advanced analytics & reporting
@@ -229,13 +248,13 @@ Pertanyaan untuk evaluasi fitur baru:
 
 Catat fitur yang ditemukan selama development tapi belum masuk phase manapun:
 
-| Feature | Ditemukan | Diusulkan oleh | Target Phase | Status |
-|---|---|---|---|---|
-| Bulk import crew via Excel | 2024-01 | — | Phase 2 | Backlog |
-| Certificate renewal workflow | 2024-01 | — | Phase 2 | Backlog |
-| Vessel comparison report | 2024-01 | — | Phase 3 | Backlog |
-| Multi-language UI (EN/ID) | 2024-01 | — | Phase 5 | Backlog |
-| Dark / Light theme toggle | 2024-01 | — | Phase 2 | Backlog |
+| Feature                      | Ditemukan | Diusulkan oleh | Target Phase | Status  |
+| ---------------------------- | --------- | -------------- | ------------ | ------- |
+| Bulk import crew via Excel   | 2024-01   | —              | Phase 2      | Backlog |
+| Certificate renewal workflow | 2024-01   | —              | Phase 2      | Backlog |
+| Vessel comparison report     | 2024-01   | —              | Phase 3      | Backlog |
+| Multi-language UI (EN/ID)    | 2024-01   | —              | Phase 5      | Backlog |
+| Dark / Light theme toggle    | 2024-01   | —              | Phase 2      | Backlog |
 
 ---
 
@@ -282,4 +301,4 @@ Sebuah fitur dinyatakan DONE jika memenuhi semua kriteria ini:
 
 ---
 
-*File ini adalah kontrak scope. Update checklist phase setiap kali item selesai. Update "Current Active Phase" setiap kali phase berganti.*
+_File ini adalah kontrak scope. Update checklist phase setiap kali item selesai. Update "Current Active Phase" setiap kali phase berganti._

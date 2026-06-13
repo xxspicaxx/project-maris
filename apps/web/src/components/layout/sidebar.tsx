@@ -1,7 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { useUiStore } from "@/stores/ui.store";
 import {
   Anchor,
   ChevronLeft,
@@ -14,6 +12,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+import { cn } from "@/lib/utils";
+import { useUiStore } from "@/stores/ui.store";
 
 interface NavItem {
   label: string;
@@ -68,18 +69,18 @@ const navItems: NavItem[] = [
   },
 ];
 
-export function Sidebar() {
+export function Sidebar(): React.JSX.Element {
   const pathname = usePathname();
   const { sidebarOpen, toggleSidebar } = useUiStore();
 
-  const isActive = (href: string) => {
+  const isActive = (href: string): boolean => {
     if (href === "/dashboard") {
       return pathname === "/dashboard";
     }
     return pathname.startsWith(href);
   };
 
-  const isChildActive = (children: { href: string }[]) => {
+  const isChildActive = (children: { href: string }[]): boolean => {
     return children.some((child) => pathname.startsWith(child.href));
   };
 

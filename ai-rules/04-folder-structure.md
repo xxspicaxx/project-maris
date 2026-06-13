@@ -284,14 +284,14 @@ create-vessel.schema.ts
 
 ## 4.7 File Size Limits
 
-| Tipe File | Max Baris | Tindakan jika melebihi |
-|---|---|---|
-| Controller | 150 baris | Pecah ke multiple controllers |
-| Service / Use Case | 200 baris | Pecah ke sub-services |
-| Repository | 250 baris | Pecah per query group |
-| React Component | 200 baris | Pecah ke sub-components |
-| Prisma Schema | — | Tidak ada limit (satu file) |
+| Tipe File          | Max Baris | Tindakan jika melebihi        |
+| ------------------ | --------- | ----------------------------- |
+| Controller         | 150 baris | Pecah ke multiple controllers |
+| Service / Use Case | 200 baris | Pecah ke sub-services         |
+| Repository         | 250 baris | Pecah per query group         |
+| React Component    | 200 baris | Pecah ke sub-components       |
+| Prisma Schema      | —         | Tidak ada limit (satu file)   |
 
 ---
 
-*Struktur ini berlaku untuk semua phase. Domain baru selalu mengikuti template di 4.3.*
+_Struktur ini berlaku untuk semua phase. Domain baru selalu mengikuti template di 4.3._

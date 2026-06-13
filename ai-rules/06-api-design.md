@@ -13,6 +13,7 @@ Full path : https://api.maritime-erp.com/api/v1/{resource}
 ```
 
 **Versioning Strategy:** URL-based versioning (`/v1`, `/v2`)
+
 - Jangan ganti versi minor yang breaking — buat endpoint v2 baru
 - v1 harus tetap berjalan minimal 12 bulan setelah v2 rilis
 
@@ -21,6 +22,7 @@ Full path : https://api.maritime-erp.com/api/v1/{resource}
 ## 6.2 REST Conventions
 
 ### URL Patterns
+
 ```
 # Resource collections (plural)
 GET    /api/v1/vessels                    ← List semua kapal
@@ -44,13 +46,14 @@ POST   /api/v1/crew/:crewId/sign-off
 ```
 
 ### HTTP Methods
-| Method | Kegunaan | Body | Idempotent |
-|---|---|---|---|
-| `GET` | Read only | ❌ | ✅ |
-| `POST` | Create / trigger action | ✅ | ❌ |
-| `PATCH` | Partial update | ✅ | ✅ |
-| `PUT` | Full replace (jarang dipakai) | ✅ | ✅ |
-| `DELETE` | Soft delete | ❌ | ✅ |
+
+| Method   | Kegunaan                      | Body | Idempotent |
+| -------- | ----------------------------- | ---- | ---------- |
+| `GET`    | Read only                     | ❌   | ✅         |
+| `POST`   | Create / trigger action       | ✅   | ❌         |
+| `PATCH`  | Partial update                | ✅   | ✅         |
+| `PUT`    | Full replace (jarang dipakai) | ✅   | ✅         |
+| `DELETE` | Soft delete                   | ❌   | ✅         |
 
 **Gunakan `PATCH` bukan `PUT`** untuk update — lebih aman untuk partial updates.
 
@@ -61,6 +64,7 @@ POST   /api/v1/crew/:crewId/sign-off
 **Semua response API wajib menggunakan format ini:**
 
 ### Success Response
+
 ```typescript
 // Interface
 interface ApiResponse<T> {
@@ -68,8 +72,8 @@ interface ApiResponse<T> {
   data: T;
   message: string;
   meta?: PaginationMeta;
-  timestamp: string;          // ISO 8601
-  requestId: string;          // UUID untuk tracing
+  timestamp: string; // ISO 8601
+  requestId: string; // UUID untuk tracing
 }
 
 interface PaginationMeta {
@@ -126,12 +130,13 @@ interface PaginationMeta {
 ```
 
 ### Error Response
+
 ```typescript
 interface ApiErrorResponse {
   success: false;
   error: {
-    code: string;             // Error code (lihat 13-error-handling.md)
-    message: string;          // Human-readable message (Bahasa Indonesia)
+    code: string; // Error code (lihat 13-error-handling.md)
+    message: string; // Human-readable message (Bahasa Indonesia)
     details?: ValidationError[];
   };
   timestamp: string;
@@ -174,17 +179,20 @@ interface ValidationError {
 ## 6.4 Query Parameters Standard
 
 ### Pagination
+
 ```
 GET /api/v1/vessels?page=1&limit=20
 ```
 
 ### Sorting
+
 ```
 GET /api/v1/vessels?sortBy=name&sortOrder=asc
 GET /api/v1/vessels?sortBy=createdAt&sortOrder=desc
 ```
 
 ### Filtering
+
 ```
 GET /api/v1/vessels?status=ACTIVE
 GET /api/v1/vessels?flagState=ID&status=ACTIVE
@@ -192,17 +200,20 @@ GET /api/v1/crew?certStatus=EXPIRING_SOON
 ```
 
 ### Search
+
 ```
 GET /api/v1/vessels?search=nusantara
 GET /api/v1/crew?search=john&searchFields=name,seamanBook
 ```
 
 ### Date Range
+
 ```
 GET /api/v1/voyages?startDate=2024-01-01&endDate=2024-12-31
 ```
 
 ### Include Relations
+
 ```
 GET /api/v1/vessels/:id?include=crew,documents,certificates
 ```
@@ -236,7 +247,7 @@ export class VesselController {
     @CurrentUser() user: RequestUser,
   ): Promise<ApiResponse<VesselResponseDto>> {
     const vessel = await this.registerVesselHandler.execute(
-      new RegisterVesselCommand(dto, user.companyId, user.id)
+      new RegisterVesselCommand(dto, user.companyId, user.id),
     );
     return ApiResponseHelper.success(vessel, "Kapal berhasil diregistrasi", 201);
   }
@@ -253,7 +264,7 @@ export class VesselController {
     @CurrentUser() user: RequestUser,
   ): Promise<ApiResponse<VesselResponseDto[]>> {
     const result = await this.listVesselsHandler.execute(
-      new ListVesselsQuery(query, user.companyId)
+      new ListVesselsQuery(query, user.companyId),
     );
     return ApiResponseHelper.paginated(result.data, result.meta, "Berhasil mengambil data armada");
   }
@@ -267,7 +278,7 @@ export class VesselController {
     @CurrentUser() user: RequestUser,
   ): Promise<ApiResponse<VesselResponseDto>> {
     const vessel = await this.getVesselHandler.execute(
-      new GetVesselQuery(vesselId, user.companyId)
+      new GetVesselQuery(vesselId, user.companyId),
     );
     return ApiResponseHelper.success(vessel, "Berhasil mengambil detail kapal");
   }
@@ -368,11 +379,11 @@ Swagger tersedia di: `http://localhost:4000/api/docs`
 ```typescript
 // Konfigurasi per endpoint category
 const rateLimitConfig = {
-  auth: { ttl: 60, limit: 5 },           // Login: 5x per menit
-  read: { ttl: 60, limit: 200 },          // GET: 200x per menit
-  write: { ttl: 60, limit: 50 },          // POST/PATCH: 50x per menit
-  reports: { ttl: 60, limit: 10 },        // Report generation: 10x per menit
-  fileUpload: { ttl: 60, limit: 20 },     // Upload: 20x per menit
+  auth: { ttl: 60, limit: 5 }, // Login: 5x per menit
+  read: { ttl: 60, limit: 200 }, // GET: 200x per menit
+  write: { ttl: 60, limit: 50 }, // POST/PATCH: 50x per menit
+  reports: { ttl: 60, limit: 10 }, // Report generation: 10x per menit
+  fileUpload: { ttl: 60, limit: 20 }, // Upload: 20x per menit
 };
 ```
 
@@ -381,6 +392,7 @@ const rateLimitConfig = {
 ## 6.9 Webhook Events (Future — Phase 5)
 
 Format webhook untuk integrasi eksternal (AIS, BKI, dll):
+
 ```json
 {
   "event": "certificate.expiring",
@@ -397,4 +409,4 @@ Format webhook untuk integrasi eksternal (AIS, BKI, dll):
 
 ---
 
-*Swagger doc wajib diupdate bersamaan dengan setiap perubahan endpoint. Tidak ada endpoint undocumented.*
+_Swagger doc wajib diupdate bersamaan dengan setiap perubahan endpoint. Tidak ada endpoint undocumented._

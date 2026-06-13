@@ -1,13 +1,14 @@
 import { Logger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { VesselStatus } from "@shared/enums";
 import helmet from "helmet";
 import { WinstonModule } from "nest-winston";
-import { VesselStatus } from "@shared/enums";
+
 import { AppModule } from "./app.module";
 import { winstonLoggerOptions } from "./shared/logging/winston.config";
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger(winstonLoggerOptions),
   });

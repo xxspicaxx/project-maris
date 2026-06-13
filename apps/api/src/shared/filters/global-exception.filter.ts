@@ -7,6 +7,7 @@ import {
   Logger,
 } from "@nestjs/common";
 import { type Request, type Response } from "express";
+
 import { DomainException } from "../exceptions/base.exception";
 
 interface ValidationErrorItem {

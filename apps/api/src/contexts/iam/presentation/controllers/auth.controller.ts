@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } fro
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 import { type Request } from "express";
+
 import {
   CurrentUser,
   type RequestUser,
@@ -16,7 +17,7 @@ import {
   RegisterUserDto,
   ResetPasswordDto,
 } from "../../application/dtos/auth.dto";
-import { type AuthService } from "../../application/services/auth.service";
+import { AuthService } from "../../application/services/auth.service";
 
 @ApiTags("Auth")
 @Controller("auth")

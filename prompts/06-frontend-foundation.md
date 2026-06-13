@@ -30,7 +30,7 @@ BUKAN consumer app. BUKAN startup dashboard. Enterprise ERP untuk profesional ma
    - Tidak ada sidebar/navbar
 
 3. apps/web/src/app/(dashboard)/layout.tsx  (ERP Shell — UTAMA)
-   
+
    STRUKTUR:
    <div class="flex h-screen overflow-hidden bg-canvas">
      <Sidebar />           ← Fixed left, 240px (collapsed: 64px)
@@ -46,14 +46,14 @@ BUKAN consumer app. BUKAN startup dashboard. Enterprise ERP untuk profesional ma
    </div>
 
 4. apps/web/src/components/layout/Sidebar.tsx
-   
+
    SPESIFIKASI VISUAL (DANAOS-inspired):
    - Background: #161f2e (--color-bg-surface)
    - Border right: 1px solid #243452
    - Width: 240px normal, 64px collapsed
    - Transition collapse: 200ms ease
    - Logo area: 48px height, logo + "Maritime ERP" text
-   
+
    Navigation items dengan ikon Lucide:
    { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" }
    { icon: Ship, label: "Armada", href: "/fleet", children: [
@@ -70,20 +70,20 @@ BUKAN consumer app. BUKAN startup dashboard. Enterprise ERP untuk profesional ma
    { icon: Wrench, label: "Teknikal", href: "/technical", children: [...] }
    { icon: ShieldAlert, label: "HSSEQ", href: "/hsseq", children: [...] }
    { icon: Settings, label: "Administrasi", href: "/admin", children: [...] }
-   
+
    Active state: bg-primary-500/10, text-primary-400, left border 2px primary
    Hover state: bg-overlay, text-primary
    Collapsed: show only icons with tooltip on hover
-   
+
    Di bagian bawah sidebar:
    - Company selector (jika user SUPER_ADMIN)
    - User avatar + nama + jabatan (compact)
    - Logout button
 
 5. apps/web/src/components/layout/TopBar.tsx
-   
+
    Height: 48px, background: #161f2e, border-bottom: 1px solid #243452
-   
+
    Kiri: Breadcrumb (auto-generated dari URL path)
    Kanan:
    - Global search button (icon + "Cari..." placeholder, Cmd+K shortcut)
@@ -92,19 +92,19 @@ BUKAN consumer app. BUKAN startup dashboard. Enterprise ERP untuk profesional ma
    - User menu (avatar dropdown: Profile, Ganti Password, Logout)
 
 6. apps/web/src/components/layout/Breadcrumb.tsx
-   
+
    Auto-generate dari pathname:
    /fleet/vessels → Dashboard > Armada > Daftar Kapal
    /fleet/vessels/[id] → Dashboard > Armada > MV Nusantara Jaya
-   
+
    Style: text-xs, text-secondary, separator: /
    Last item: text-primary, tidak clickable
 
 7. CSS Global (apps/web/src/app/globals.css)
-   
+
    Tambahkan CSS variables dari design system:
    :root { semua --color-* variables }
-   
+
    Komponen utility classes:
    .erp-table { dense table styles }
    .erp-panel { bg-surface border rounded }
@@ -125,7 +125,7 @@ JANGAN buat komponen yang terlalu "consumer-friendly" — ini enterprise dense U
 Lokasi: apps/web/src/components/
 
 1. data-display/ErpDataTable.tsx
-   
+
    Props:
    - columns: ColumnDef<T>[]          ← @tanstack/react-table
    - data: T[]
@@ -136,7 +136,7 @@ Lokasi: apps/web/src/components/
    - onRowClick?: (row: T) => void
    - selectedRows?: string[]
    - stickyHeader?: boolean           ← default true
-   
+
    Features:
    - Row height: 36px (compact)
    - Header: 32px, uppercase, 11px font, secondary color
@@ -149,7 +149,7 @@ Lokasi: apps/web/src/components/
    - Page size selector: [10, 20, 50, 100]
 
 2. data-display/KpiCard.tsx
-   
+
    Props:
    - title: string
    - value: string | number
@@ -158,7 +158,7 @@ Lokasi: apps/web/src/components/
    - status?: "good" | "warning" | "danger" | "neutral"
    - icon?: LucideIcon
    - isLoading?: boolean
-   
+
    Visual:
    - bg-surface, border, rounded, p-3
    - Title: 11px uppercase tracking-wider text-secondary
@@ -167,13 +167,13 @@ Lokasi: apps/web/src/components/
    - Trend: small arrow + percentage in green/red
 
 3. data-display/InfoPanel.tsx
-   
+
    Props:
    - title: string
    - fields: Array<{ label: string, value: ReactNode, span?: number }>
    - actions?: ReactNode
    - isLoading?: boolean
-   
+
    Visual:
    - Panel dengan header (title + actions)
    - Body: label-value pairs, 2 kolom grid
@@ -183,71 +183,71 @@ Lokasi: apps/web/src/components/
    - Loading: skeleton lines
 
 4. maritime/StatusBadge.tsx
-   
+
    Handles semua status types:
    - VesselStatus: ACTIVE(green), DRYDOCK(yellow), LAID_UP(gray), SCRAPPED(red-dark)
    - CertificateStatus: VALID(green), EXPIRING_SOON(yellow), CRITICAL(orange), EXPIRED(red)
    - VoyageStatus: PLANNED(blue), ACTIVE(green), COMPLETED(gray), CANCELLED(red)
-   
+
    Props:
    - status: string
    - type: "vessel" | "certificate" | "voyage" | "crew"
    - size?: "sm" | "md"              ← default "sm" (11px)
-   
+
    Visual: colored dot + label, pill shape, small padding
    Jangan gunakan full background — gunakan tinted background (opacity 10-15%)
 
 5. maritime/CertificateExpiryBar.tsx
-   
+
    Visual indicator untuk certificate expiry:
    - Progress bar dari 0–100% (100% = today, 0% = issue date)
    - Color: green → yellow → orange → red berdasarkan days left
    - Tooltip: "X hari lagi" atau "Kadaluarsa Y hari lalu"
    - Compact: hanya bar + days left number
-   
+
    Props: { issueDate, expiryDate, size?: "sm" | "md" }
 
 6. forms/
-   
+
    FormField.tsx — wrapper untuk react-hook-form fields
    - Label (required indicator: *)
    - Input/Select/etc
    - Error message (merah, 11px)
    - Helper text
-   
+
    MariTimeSelect.tsx — dropdown yang consistent
    - Searchable
    - Loading state
    - Empty state
    - Support untuk vessel types, ranks, flag states, dll
-   
+
    DatePicker.tsx — untuk expiry dates
    - Format: DD/MM/YYYY (Indonesia)
    - Min/max date props
    - Highlight dates dalam 90 hari (warning zone)
 
 7. feedback/
-   
+
    AlertBanner.tsx — untuk compliance alerts
    - Variants: warning, critical, danger, info
    - Icon + title + message + optional CTA button
    - Dismissible
-   
+
    EmptyState.tsx
    - Icon + title + description + optional action button
    - Berbeda style untuk: no data, no permission, no results, error
 
 8. layout/
-   
+
    PageHeader.tsx
    - Title (h1, 18px)
    - Subtitle (text-secondary, 12px)
    - Right slot: action buttons
    - Optional: status badge di sebelah title
-   
+
    SectionDivider.tsx
    - Horizontal rule dengan optional label
-   
+
    TabNav.tsx
    - Tab navigation untuk detail pages
    - Active: underline primary color
@@ -267,16 +267,16 @@ Baca docs/ai-rules/06-api-design.md untuk format response yang diharapkan.
 Baca docs/ai-rules/13-error-handling.md untuk error handling di frontend.
 
 1. apps/web/src/lib/api-client.ts
-   
+
    Axios instance dengan:
    - baseURL: process.env.NEXT_PUBLIC_API_URL
    - timeout: 30000
    - withCredentials: true  ← untuk httpOnly cookie refresh token
-   
+
    Request interceptor:
    → Inject Authorization: Bearer {accessToken} dari auth store
    → Inject X-Request-ID: uuid()
-   
+
    Response interceptor:
    → Unwrap ApiResponse<T>.data → return langsung data
    → Handle 401: coba refresh token, retry request
@@ -332,24 +332,24 @@ Baca docs/ai-rules/13-error-handling.md untuk error handling di frontend.
    useCurrentUser() — useQuery
 
 4. apps/web/src/stores/auth.store.ts  (Zustand)
-   
+
    State:
    - accessToken: string | null
    - user: CurrentUser | null
    - isAuthenticated: boolean
-   
+
    Actions:
    - setAccessToken(token)
    - setUser(user)
    - clearAuth()            ← dipanggil saat logout/token expired
 
 5. apps/web/src/stores/ui.store.ts  (Zustand)
-   
+
    State:
    - sidebarCollapsed: boolean
    - activeNotifications: Notification[]
    - globalSearch: { open: boolean, query: string }
-   
+
    Actions:
    - toggleSidebar()
    - addNotification(notif)
@@ -359,7 +359,7 @@ Baca docs/ai-rules/13-error-handling.md untuk error handling di frontend.
 
 6. React Query setup:
    apps/web/src/lib/query-client.ts
-   
+
    QueryClient config:
    defaultOptions: {
      queries: {
@@ -387,20 +387,20 @@ Baca docs/ai-rules/13-error-handling.md untuk error handling di frontend.
 Buat auth pages dan middleware untuk route protection.
 
 1. apps/web/src/app/(auth)/login/page.tsx
-   
+
    Form fields:
    - Email input (type="email", autocomplete="email")
    - Password input (type="password", show/hide toggle)
    - "Ingat saya" checkbox (optional)
    - Submit button: "Masuk"
    - Link: "Lupa Password?"
-   
+
    Visual:
    - Card centered, max-width 400px
    - Logo di atas
    - "Maritime Fleet ERP" subtitle
    - Subtle animated background (CSS only, tidak butuh library)
-   
+
    Logic (useLogin hook):
    onSubmit → login(email, password)
    → Set accessToken di auth store
@@ -420,13 +420,13 @@ Buat auth pages dan middleware untuk route protection.
    - Token dari URL query param
 
 4. apps/web/src/middleware.ts  (Next.js middleware)
-   
+
    Route protection:
    - Semua route /dashboard/* → cek apakah ada accessToken di cookie/store
    - Jika tidak ada → redirect ke /login
    - Jika ada tapi expired → coba refresh, jika gagal → /login
    - Route /login, /forgot-password, /reset-password → jika sudah auth → redirect /dashboard
-   
+
    Permission check:
    - Baca permissions dari JWT payload (decode di middleware)
    - Jika akses route yang butuh permission tertentu tapi tidak punya → redirect /403
@@ -437,7 +437,7 @@ Buat auth pages dan middleware untuk route protection.
 
 6. apps/web/src/app/not-found.tsx  (404)
    - Maritime themed 404 page
-   - "Halaman tidak ditemukan" 
+   - "Halaman tidak ditemukan"
    - Link kembali ke dashboard
 ```
 
