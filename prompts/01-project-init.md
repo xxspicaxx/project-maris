@@ -4,9 +4,14 @@
 **Prerequisite:** Node 20+, pnpm 8+, Docker terinstall  
 **Output:** Project siap di-run secara lokal dengan `pnpm dev`
 
+> **Status: ✅ SELESAI**  
+> Monorepo Turborepo+pnpm berjalan, Docker Compose tersedia, shared packages (enums, types, utils, schemas) terbuat, ESLint+Prettier+Husky aktif.
+
 ---
 
 ## PROMPT 01-A — Inisiasi Monorepo
+
+> ✅ **SELESAI** — Struktur monorepo Turborepo+pnpm terbuat, `apps/api`, `apps/web`, `packages/shared`, `packages/ui`, `packages/config` sudah ada.
 
 ```
 Kamu adalah senior fullstack engineer yang akan membangun Maritime Fleet ERP.
@@ -50,6 +55,8 @@ Setelah struktur selesai, pastikan `pnpm install` dan `pnpm dev` berjalan tanpa 
 
 ## PROMPT 01-B — Docker Compose Setup
 
+> ✅ **SELESAI** — `docker-compose.yml`, `docker-compose.prod.yml`, `docker/Dockerfile.api`, `docker/Dockerfile.web`, `docker/nginx/nginx.conf`, `.env.example` tersedia.
+
 ```
 Lanjutkan setup Docker Compose untuk Maritime Fleet ERP.
 Baca docs/ai-rules/03-tech-stack.md untuk referensi services yang dibutuhkan.
@@ -90,6 +97,8 @@ Requirements:
 ---
 
 ## PROMPT 01-C — Shared Package Foundation
+
+> ✅ **SELESAI** — `packages/shared/src/` memiliki `enums/`, `types/`, `constants/`, `utils/`, `schemas/`, dan semua ter-export dari `index.ts`.
 
 ```
 Setup packages/shared yang akan digunakan oleh apps/web dan apps/api.
@@ -134,6 +143,8 @@ Pastikan apps/api dan apps/web bisa import dari @shared/*
 ---
 
 ## PROMPT 01-D — Tooling & Code Quality
+
+> ✅ **SELESAI** — `.prettierrc`, `.eslintignore`, `.prettierrc`, `.husky/pre-commit`, `.lintstagedrc.js`, `.vscode/` semua ada. `no-console: warn` aktif.
 
 ```
 Setup tooling lengkap untuk code quality dan developer experience.

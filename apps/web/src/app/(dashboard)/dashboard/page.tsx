@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Anchor, FileText, Ship, Users } from "lucide-react";
 
+import { VesselStatusChart } from "@/components/VesselStatusChart";
 import { useAlertPanel, useCertificateSummary, useFleetOverview } from "@/hooks/use-dashboard";
 
 function KpiCard({
@@ -197,6 +198,17 @@ export default function DashboardPage(): React.JSX.Element {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Vessel Status Chart */}
+      <div className="mt-4">
+        <VesselStatusChart
+          data={[
+            { status: "ACTIVE", count: overview?.activeVessels ?? 0 },
+            { status: "DRYDOCK", count: overview?.drydockVessels ?? 0 },
+            { status: "LAID_UP", count: overview?.laidUpVessels ?? 0 },
+          ]}
+        />
       </div>
     </div>
   );

@@ -32,12 +32,14 @@ export const useAuthStore = create<AuthState>()(
       setAuth: (user: User, accessToken: string, refreshToken: string): void => {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
+        document.cookie = `access_token=${accessToken}; path=/; max-age=86400; SameSite=Lax`;
         set({ user, accessToken, refreshToken, isAuthenticated: true });
       },
 
       logout: (): void => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        document.cookie = `access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
         set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
       },
 

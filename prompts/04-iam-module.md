@@ -4,9 +4,14 @@
 **Prerequisite:** Prompt 03 selesai  
 **Output:** Login berfungsi, RBAC aktif, semua test auth pass
 
+> **Status: ⚠️ SEBAGIAN SELESAI**  
+> Auth controller (login, logout, refresh, forgot-password, reset-password), user controller, role controller, dan JWT strategy tersedia. **Yang belum:** Domain entities (User entity, Email VO, Password VO), domain events, infrastructure repository implementasi lengkap, permission cache service (Redis), unit tests, session management endpoints, login attempt tracking (Redis lockout).
+
 ---
 
 ## PROMPT 04-A — Auth Domain & Application Layer
+
+> ⚠️ **SEBAGIAN** — `auth.service.ts`, `user.service.ts`, `role.service.ts` ada di application/services. DTOs tersedia. **Belum ada:** Domain entities (user.entity.ts, email.vo.ts, password.vo.ts), domain events, domain exceptions, repository interfaces, CQRS handlers (login.handler, refresh-token.handler, dll).
 
 ```
 Buat IAM bounded context menggunakan DDD + Clean Architecture.
@@ -144,6 +149,8 @@ Buat unit tests untuk semua handlers di __tests__/ masing-masing.
 
 ## PROMPT 04-B — IAM Infrastructure & Presentation
 
+> ✅ **SELESAI** — `auth.controller.ts` (login, logout, refresh, forgot-password, reset-password, /me), `user.controller.ts`, `role.controller.ts`, `jwt.strategy.ts`, `jwt-auth.guard.ts`, `rbac.guard.ts` tersedia. `iam.module.ts` terdaftar.
+
 ```
 Buat infrastructure dan presentation layer untuk IAM module.
 Baca docs/ai-rules/06-api-design.md untuk controller patterns.
@@ -231,6 +238,8 @@ PRESENTATION LAYER (contexts/iam/presentation/):
 
 ## PROMPT 04-C — Permission Cache & RBAC Guard
 
+> ⚠️ **SEBAGIAN** — `rbac.guard.ts` implementasi dasar tersedia. **Belum ada:** `permission-cache.service.ts` dengan Redis caching, invalidasi cache saat role diubah, vessel-scoped check di RBAC guard, unit tests untuk login handler dan get-user-permissions.
+
 ```
 Implementasikan permission caching di Redis dan RBAC guard yang robust.
 Baca docs/ai-rules/08-auth-rbac.md section 8.4 untuk guard implementation.
@@ -298,6 +307,8 @@ Baca docs/ai-rules/08-auth-rbac.md section 8.4 untuk guard implementation.
 ---
 
 ## PROMPT 04-D — Password Reset & Security
+
+> ⚠️ **SEBAGIAN** — `forgot-password` dan `reset-password` endpoints ada di auth.controller. **Belum ada:** Model `PasswordResetToken` di schema, migration terkait, login attempt tracking di Redis (lockout 5 attempts), session management endpoints (GET/DELETE `/auth/sessions`).
 
 ```
 Implementasikan password reset flow dan security hardening untuk auth.

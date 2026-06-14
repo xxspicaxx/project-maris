@@ -4,9 +4,14 @@
 **Prerequisite:** Prompt 06 selesai — ERP shell berfungsi, API client ready  
 **Output:** Dashboard fully functional dengan real data + halaman daftar kapal
 
+> **Status: ⚠️ SEBAGIAN SELESAI**  
+> `apps/web/src/app/(dashboard)/dashboard/page.tsx` (dashboard page) dan `apps/web/src/app/(dashboard)/fleet/page.tsx` (fleet list) sudah ada. Backend dashboard service dan hooks juga ada. **Yang belum:** Dashboard widget components (AlertPanel, VesselStatusChart, RecentActivityPanel, UpcomingExpiryPanel) di `components/dashboard/`, halaman detail vessel, design system components yang diperlukan (KpiCard, ErpDataTable, dll masih kosong).
+
 ---
 
 ## PROMPT 07-A — Dashboard Page Layout
+
+> ⚠️ **SEBAGIAN** — `apps/web/src/app/(dashboard)/dashboard/page.tsx` tersedia dengan struktur layout KPI, alert, chart sections. **Belum ada:** Widget components (AlertPanel, VesselStatusChart, RecentActivityPanel, UpcomingExpiryPanel) di folder `components/dashboard/`.
 
 ```
 Buat halaman Dashboard utama untuk Maritime Fleet ERP.
@@ -87,6 +92,8 @@ SECTION 3 — Bottom widgets (1:1 split)
 
 ## PROMPT 07-B — Dashboard Component Details
 
+> ❌ **BELUM SELESAI** — Semua widget komponen (AlertPanel, VesselStatusChart, RecentActivityPanel, UpcomingExpiryPanel) belum dibuat. Folder `components/dashboard/` belum ada.
+
 ```
 Buat semua widget komponen untuk dashboard.
 Setiap komponen punya loading skeleton dan error state sendiri.
@@ -166,6 +173,8 @@ Data fetch per komponen — bukan satu big fetch di parent.
 ---
 
 ## PROMPT 07-C — Fleet Vessels List Page
+
+> ⚠️ **SEBAGIAN** — `apps/web/src/app/(dashboard)/fleet/page.tsx` tersedia dengan struktur dasar. **Belum selesai:** ErpDataTable component belum ada, filter bar, URL state sync, dialog tambah kapal (slide-over), bulk action bar.
 
 ```
 Buat halaman Daftar Kapal — core page paling sering digunakan.
@@ -252,6 +261,8 @@ onSubmit:
 ---
 
 ## PROMPT 07-D — Vessel Detail Page
+
+> ❌ **BELUM SELESAI** — `apps/web/src/app/(dashboard)/fleet/vessels/[vesselId]/` belum ada. Halaman detail kapal dengan InfoPanel, TabNav (Sertifikat, Dokumen, Kru, Riwayat), change status dialog belum dibuat.
 
 ```
 Buat halaman detail kapal — split panel layout.

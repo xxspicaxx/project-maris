@@ -1,50 +1,82 @@
-import { Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from "@nestjs/common";
+import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from "@nestjs/common";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+
+const SOFT_DELETE_MODELS = [
+  "Company",
+  "User",
+  "Role",
+  "Permission",
+  "Vessel",
+  "VesselCertificate",
+  "Seafarer",
+  "SeafarerCertificate",
+  "CrewAssignment",
+  "Voyage",
+  "PortCall",
+  "Document",
+];
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
 
   constructor() {
-    super({
-      log: [
-        { emit: "event", level: "query" },
-        { emit: "stdout", level: "info" },
-        { emit: "stdout", level: "warn" },
-        { emit: "stdout", level: "error" },
-      ],
+    const adapter = new PrismaPg({
+      connectionString: process.env.DATABASE_URL,
     });
+
+    super({
+      adapter,
+      log: process.env.NODE_ENV === "development" ? ["query", "info", "warn", "error"] : ["error"],
+    });
+  }
+
+  /**
+   * Creates an extended client with automatic soft-delete filtering.
+   * Use this when you want findFirst/findMany/findUnique to automatically
+   * exclude soft-deleted records (where deletedAt IS NOT NULL).
+   */
+  withSoftDelete(): ReturnType<typeof this.$extends> {
+    const addSoftDeleteFilter = ({
+      args,
+      query,
+    }: {
+      args: { where?: Record<string, unknown> };
+      query: (args: unknown) => Promise<unknown>;
+    }): Promise<unknown> => {
+      args.where = args.where || {};
+      if (args.where.deletedAt === undefined) {
+        args.where.deletedAt = null;
+      }
+      return query(args);
+    };
+
+    const queryOverrides = Object.fromEntries(
+      SOFT_DELETE_MODELS.map((model) => {
+        const key = model.charAt(0).toLowerCase() + model.slice(1);
+        return [
+          key,
+          {
+            findFirst: addSoftDeleteFilter,
+            findMany: addSoftDeleteFilter,
+            findUnique: addSoftDeleteFilter,
+          },
+        ];
+      }),
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.$extends({ query: queryOverrides as any });
   }
 
   async onModuleInit(): Promise<void> {
     await this.$connect();
-    this.logger.log("Database connected successfully");
+    this.logger.log("Prisma connected successfully");
   }
 
   async onModuleDestroy(): Promise<void> {
     await this.$disconnect();
-    this.logger.log("Database disconnected");
-  }
-
-  /**
-   * Soft delete helper — sets deletedAt field instead of actual delete
-   */
-  async softDelete<T extends { deletedAt: Date | null }>(
-    model: {
-      update: (args: { where: unknown; data: unknown }) => Promise<T>;
-    },
-    id: string,
-  ): Promise<T> {
-    return model.update({
-      where: { id },
-      data: { deletedAt: new Date() },
-    });
-  }
-
-  /**
-   * Check if a record is soft-deleted
-   */
-  isDeleted(record: { deletedAt: Date | null } | null): boolean {
-    return record?.deletedAt !== null && record?.deletedAt !== undefined;
+    this.logger.log("Prisma disconnected");
   }
 }

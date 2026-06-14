@@ -116,7 +116,8 @@ export class UserService {
       data: {
         userId,
         roleId,
-        assignedBy,
+        createdBy: assignedBy,
+        updatedBy: assignedBy,
       },
     });
   }

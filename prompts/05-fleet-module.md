@@ -4,9 +4,14 @@
 **Prerequisite:** Prompt 04 selesai, auth berfungsi  
 **Output:** Fleet module lengkap dengan compliance validation
 
+> **Status: ⚠️ SEBAGIAN SELESAI**  
+> Backend: `vessel.controller.ts` (CRUD lengkap), `vessel.service.ts`, `certificate.service.ts`, cron job `certificate-expiry.scheduler.ts`, fleet domain exceptions ada. **Yang belum:** Domain entities (vessel.entity.ts, vessel-certificate.entity.ts), value objects, domain events, infrastructure repositories (prisma-vessel.repository.ts), vessel-certificate controller, vessel-status controller, mapper, unit & integration tests.
+
 ---
 
 ## PROMPT 05-A — Fleet Domain Layer
+
+> ⚠️ **SEBAGIAN** — `apps/api/src/contexts/fleet/domain/exceptions/` ada. **Belum ada:** `entities/vessel.entity.ts`, `entities/vessel-certificate.entity.ts`, `value-objects/imo-number.vo.ts`, `value-objects/vessel-status.vo.ts`, `events/`, `repositories/` interfaces, unit tests domain.
 
 ```
 Buat Fleet bounded context — domain layer.
@@ -135,6 +140,8 @@ Buat unit tests untuk:
 
 ## PROMPT 05-B — Fleet Application Layer
 
+> ⚠️ **SEBAGIAN** — `vessel.service.ts` (CRUD dasar) dan `certificate.service.ts` ada di `application/services/`. **Belum ada:** Commands/queries terpisah (register-vessel, update-vessel, change-vessel-status, dll), DTOs Swagger lengkap, unit tests handlers.
+
 ```
 Buat application layer untuk Fleet module — use cases dan handlers.
 Baca docs/ai-rules/06-api-design.md untuk DTO patterns.
@@ -257,6 +264,8 @@ Buat unit tests untuk semua handlers (mock repositories).
 ---
 
 ## PROMPT 05-C — Fleet Infrastructure & Presentation
+
+> ⚠️ **SEBAGIAN** — `vessel.controller.ts` dengan CRUD + compliance-summary endpoint ada. **Belum ada:** `prisma-vessel.repository.ts`, `prisma-vessel-certificate.repository.ts`, `vessel.mapper.ts`, event handlers, `vessel-certificate.controller.ts` (endpoints sertifikat), `vessel-status.controller.ts` (activate/drydock/layup), integration tests.
 
 ```
 Buat infrastructure dan presentation layer untuk Fleet module.
@@ -396,6 +405,8 @@ PRESENTATION:
 ---
 
 ## PROMPT 05-D — Certificate Expiry Cron Job
+
+> ✅ **SELESAI** — `certificate-expiry.scheduler.ts` ada di `fleet/infrastructure/scheduler/` dengan `@Cron("0 6 * * *")`. Job sudah terdaftar di fleet.module.ts.
 
 ```
 Buat scheduled job untuk daily certificate expiry check.

@@ -5,7 +5,7 @@ import {
   VesselStatus,
   FuelType,
 } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 import { v4 as uuidv4 } from "uuid";
 
 export function createMockVessel(overrides?: Partial<Vessel>): Vessel {
@@ -59,11 +59,11 @@ export function createMockCertificate(
     expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
     status: "VALID",
     documentUrl: "https://minio.maritime-erp.com/certs/class-cert.pdf",
-    notes: "Sertifikat Lambung dan Mesin",
     createdAt: new Date(),
     updatedAt: new Date(),
     createdBy: uuidv4(),
     updatedBy: uuidv4(),
+    deletedAt: null,
     ...overrides,
   };
 }

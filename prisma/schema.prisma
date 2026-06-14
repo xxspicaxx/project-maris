@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// Maritime Fleet ERP — Database Schema
+// Maritime Fleet ERP — Database Schema (Phase 1)
 // ═══════════════════════════════════════════════════════════════
 
 generator client {
@@ -8,33 +8,9 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-// ─── COMPANY MANAGEMENT ───────────────────────────────────────
-
-model Company {
-  id        String      @id @default(uuid())
-  code      String      @unique           // Kode perusahaan (e.g., "PT-NJ")
-  name      String
-  type      CompanyType                   // SHIP_OWNER | SHIP_MANAGER | CHARTERER
-  country   String                        // ISO 3166-1 alpha-2
-  address   String?
-  email     String?
-  phone     String?
-  taxId     String?                       // NPWP
-  isActive  Boolean     @default(true)
-  settings  Json?
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-
-  vessels       Vessel[]
-  users         User[]
-  seafarers     Seafarer[]
-  documents     Document[]
-
-  @@map("companies")
-}
+// ─── BAGIAN 1 — Company & IAM ─────────────────────────────────
 
 enum CompanyType {
   SHIP_OWNER
@@ -43,79 +19,108 @@ enum CompanyType {
   HOLDING
 }
 
-// ─── IAM (Identity & Access Management) ──────────────────────
+model Company {
+  id                  String                @id @default(uuid())
+  code                String                @unique // Kode perusahaan (e.g., "PT-NJ")
+  name                String
+  type                CompanyType
+  country             String                // ISO 3166-1 alpha-2
+  address             String?
+  email               String?
+  phone               String?
+  taxId               String?               // NPWP
+  isActive            Boolean               @default(true)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  createdBy           String
+  updatedBy           String
+  deletedAt           DateTime?
+
+  // Relations
+  users               User[]
+  vessels             Vessel[]
+  vesselCertificates  VesselCertificate[]
+  seafarers           Seafarer[]
+  seafarerCertificates SeafarerCertificate[]
+  crewAssignments     CrewAssignment[]
+  voyages             Voyage[]
+  portCalls           PortCall[]
+  documents           Document[]
+  auditLogs           AuditLog[]
+
+  @@map("companies")
+}
 
 model User {
-  id           String     @id @default(uuid())
-  companyId    String
-  email        String     @unique
-  passwordHash String
-  firstName    String
-  lastName     String
-  phone        String?
-  isActive     Boolean    @default(true)
-  lastLoginAt  DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  deletedAt    DateTime?
+  id            String         @id @default(uuid())
+  companyId     String
+  email         String         @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  phone         String?
+  isActive      Boolean        @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  createdBy     String
+  updatedBy     String
+  deletedAt     DateTime?
 
-  company       Company       @relation(fields: [companyId], references: [id])
-  userRoles     UserRole[]
-  auditLogs     AuditLog[]
-  refreshTokens RefreshToken[]
+  // Relations
+  company             Company              @relation(fields: [companyId], references: [id])
+  userRoles           UserRole[]
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  auditLogs           AuditLog[]
 
   @@index([companyId, isActive])
+  @@index([companyId, deletedAt])
   @@map("users")
 }
 
-model RefreshToken {
-  id        String    @id @default(uuid())
-  userId    String
-  token     String    @unique   // Hashed
-  expiresAt DateTime
-  createdAt DateTime  @default(now())
-  revokedAt DateTime?
-  ipAddress String?
-  userAgent String?
-
-  user      User      @relation(fields: [userId], references: [id])
-
-  @@index([userId])
-  @@index([token])
-  @@map("refresh_tokens")
-}
-
 model Role {
-  id            String     @id @default(uuid())
-  name          String     @unique           // "fleet_manager", "master", "crewing_officer"
+  id            String           @id @default(uuid())
+  name          String           @unique // "fleet_manager", "master", "crewing_officer"
   displayName   String
   description   String?
-  isSystem      Boolean    @default(false)
-  createdAt     DateTime   @default(now())
+  isSystem      Boolean          @default(false) // System roles tidak bisa dihapus
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  createdBy     String
+  updatedBy     String
+  deletedAt     DateTime?
 
-  userRoles         UserRole[]
-  rolePermissions   RolePermission[]
+  // Relations
+  userRoles     UserRole[]
+  rolePermissions RolePermission[]
 
   @@map("roles")
 }
 
-model Permission {
-  id          String           @id @default(uuid())
-  resource    String                           // "vessel", "crew", "document"
-  action      String                           // "create", "read", "update", "delete"
-  scope       PermissionScope                  // OWN | COMPANY | ALL
-  description String?
+enum PermissionScope {
+  OWN // Hanya data milik sendiri
+  COMPANY // Semua data dalam company
+  ALL // Lintas company (Super Admin only)
+}
 
+model Permission {
+  id              String           @id @default(uuid())
+  resource        String           // "vessel", "crew", "document"
+  action          String           // "create", "read", "update", "delete"
+  scope           PermissionScope
+  description     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  createdBy       String
+  updatedBy       String
+  deletedAt       DateTime?
+
+  // Relations
   rolePermissions RolePermission[]
 
   @@unique([resource, action, scope])
   @@map("permissions")
-}
-
-enum PermissionScope {
-  OWN
-  COMPANY
-  ALL
 }
 
 model UserRole {
@@ -123,81 +128,79 @@ model UserRole {
   userId     String
   roleId     String
   vesselId   String?  // Jika role scoped ke kapal tertentu
-  assignedAt DateTime @default(now())
-  assignedBy String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  createdBy  String
+  updatedBy  String
 
+  // Relations
   user       User     @relation(fields: [userId], references: [id])
   role       Role     @relation(fields: [roleId], references: [id])
+  vessel     Vessel?  @relation(fields: [vesselId], references: [id])
 
   @@unique([userId, roleId, vesselId])
   @@map("user_roles")
 }
 
 model RolePermission {
-  roleId        String
-  permissionId  String
+  roleId       String
+  permissionId String
 
-  role          Role       @relation(fields: [roleId], references: [id])
-  permission    Permission @relation(fields: [permissionId], references: [id])
+  // Relations
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
 
   @@id([roleId, permissionId])
   @@map("role_permissions")
 }
 
-// ─── FLEET MANAGEMENT ────────────────────────────────────────
-
-model Vessel {
-  id                  String        @id @default(uuid())
-  companyId           String
-  imoNumber           String        @unique    // Global unique
-  mmsiNumber          String?       @unique
-  name                String
-  formerNames         String[]                 // Array nama sebelumnya
-  callSign            String?
-  flagState           String                   // ISO 3166-1 alpha-2
-  portOfRegistry      String?
-  vesselType          VesselType
-  status              VesselStatus  @default(ACTIVE)
-
-  // Measurements
-  grossTonnage        Decimal       @db.Decimal(10, 2)
-  netTonnage          Decimal?      @db.Decimal(10, 2)
-  deadweightTonnage   Decimal?      @db.Decimal(10, 2)
-  lengthOverall       Decimal?      @db.Decimal(8, 2)
-  breadth             Decimal?      @db.Decimal(8, 2)
-  depth               Decimal?      @db.Decimal(8, 2)
-
-  // Build info
-  yearBuilt           Int?
-  shipyard            String?
-  shipyardCountry     String?
-  classNumber         String?
-  classSociety        String?      // "BKI", "DNV", "Lloyd's", "ABS"
-
-  // Engine
-  mainEngineType      String?
-  mainEnginePower     Decimal?     @db.Decimal(10, 2)
-  fuelType            FuelType?
-
-  // Audit
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
-  createdBy           String
-  updatedBy           String
-  deletedAt           DateTime?
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  ipAddress String?
+  createdAt DateTime  @default(now())
 
   // Relations
-  company             Company      @relation(fields: [companyId], references: [id])
-  certificates        VesselCertificate[]
-  crewAssignments     CrewAssignment[]
-  voyages             Voyage[]
-  maintenanceJobs     MaintenanceJob[]
-  documents           Document[]
+  user      User      @relation(fields: [userId], references: [id])
 
-  @@index([companyId, status])
-  @@index([companyId, deletedAt])
-  @@map("vessels")
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
 }
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([token])
+  @@map("password_reset_tokens")
+}
+
+model LoginAttempt {
+  id        String   @id @default(uuid())
+  email     String
+  ipAddress String?
+  userAgent String?
+  isSuccess Boolean
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([ipAddress])
+  @@index([createdAt])
+  @@map("login_attempts")
+}
+
+// ─── BAGIAN 2 — Fleet Domain ──────────────────────────────────
 
 enum VesselType {
   BULK_CARRIER
@@ -232,39 +235,111 @@ enum FuelType {
   METHANOL
 }
 
-// ─── CREW MANAGEMENT ─────────────────────────────────────────
+model Vessel {
+  id                String              @id @default(uuid())
+  companyId         String
+  imoNumber         String              @unique // Global unique
+  mmsiNumber        String?             @unique
+  name              String
+  formerNames       String[]            // Array nama sebelumnya
+  callSign          String?
+  flagState         String              // ISO 3166-1 alpha-2 ("ID", "PA", "SG")
+  portOfRegistry    String?
+  vesselType        VesselType
+  status            VesselStatus        @default(ACTIVE)
 
-model Seafarer {
-  id                  String          @id @default(uuid())
-  companyId           String
-  seamanBookNumber    String?         @unique
-  firstName           String
-  lastName            String
-  nationality         String          // ISO 3166-1 alpha-2
-  dateOfBirth         DateTime
-  placeOfBirth        String?
-  gender              Gender          @default(MALE)
-  passportNumber      String?
-  passportExpiry      DateTime?
-  address             String?
-  emergencyContact    Json?           // { name, phone, relation }
-  bankAccount         Json?           // Encrypted
-  status              SeafarerStatus  @default(ACTIVE)
+  // Measurements
+  grossTonnage      Decimal             @db.Decimal(10, 2)
+  netTonnage        Decimal?            @db.Decimal(10, 2)
+  deadweightTonnage Decimal?            @db.Decimal(10, 2)
+  lengthOverall     Decimal?            @db.Decimal(8, 2) // meters
+  breadth           Decimal?            @db.Decimal(8, 2)
+  depth             Decimal?            @db.Decimal(8, 2)
 
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-  createdBy           String
-  updatedBy           String
-  deletedAt           DateTime?
+  // Build info
+  yearBuilt         Int?
+  shipyard          String?
+  shipyardCountry   String?
+  classNumber       String?
+  classSociety      String?             // "BKI", "DNV", "Lloyd's", "ABS"
 
-  company             Company         @relation(fields: [companyId], references: [id])
-  certificates        SeafarerCertificate[]
-  assignments         CrewAssignment[]
-  contracts           CrewContract[]
+  // Engine
+  mainEngineType    String?
+  mainEnginePower   Decimal?            @db.Decimal(10, 2) // kW
+  fuelType          FuelType?
+
+  // Audit
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  createdBy         String
+  updatedBy         String
+  deletedAt         DateTime?
+
+  // Relations
+  company           Company             @relation(fields: [companyId], references: [id])
+  certificates      VesselCertificate[]
+  crewAssignments   CrewAssignment[]
+  voyages           Voyage[]
+  documents         Document[]
+  userRoles         UserRole[]
 
   @@index([companyId, status])
-  @@map("seafarers")
+  @@index([companyId, deletedAt])
+  @@map("vessels")
 }
+
+enum CertificateStatus {
+  VALID
+  EXPIRING_SOON // Dalam 90 hari
+  CRITICAL      // Dalam 30 hari
+  EXPIRED
+  PENDING_RENEWAL
+  SUSPENDED
+}
+
+enum VesselCertType {
+  SMC // Safety Management Certificate
+  DOC // Document of Compliance
+  ISSC // International Ship Security Certificate
+  LOAD_LINE
+  IOPP // MARPOL Annex I
+  ITC // International Tonnage Certificate
+  CSR // Continuous Synopsis Record
+  MARPOL_ANNEX_VI // IAPP Certificate
+  CLASS_CERTIFICATE
+  RADIO_LICENSE
+  MINIMUM_SAFE_MANNING
+}
+
+model VesselCertificate {
+  id                String            @id @default(uuid())
+  companyId         String
+  vesselId          String
+  certificateType   VesselCertType
+  certificateNumber String?
+  issuingAuthority  String
+  issueDate         DateTime
+  expiryDate        DateTime
+  status            CertificateStatus @default(VALID)
+  documentUrl       String?           // Link ke MinIO/S3
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  createdBy         String
+  updatedBy         String
+  deletedAt         DateTime?
+
+  // Relations
+  company           Company           @relation(fields: [companyId], references: [id])
+  vessel            Vessel            @relation(fields: [vesselId], references: [id])
+
+  @@index([companyId, vesselId])
+  @@index([companyId, status])
+  @@index([companyId, deletedAt])
+  @@index([expiryDate])
+  @@map("vessel_certificates")
+}
+
+// ─── BAGIAN 3 — Crew Domain ───────────────────────────────────
 
 enum Gender {
   MALE
@@ -278,63 +353,84 @@ enum SeafarerStatus {
   BLACKLISTED
 }
 
-model CrewAssignment {
-  id              String    @id @default(uuid())
-  companyId       String
-  seafarerId      String
-  vesselId        String
-  rank            CrewRank
-  signOnDate      DateTime
-  signOffDate     DateTime?
-  signOnPort      String
-  signOffPort     String?
-  contractDuration Int       // Months
-  remarks         String?
+model Seafarer {
+  id               String                @id @default(uuid())
+  companyId        String
+  seamanBookNumber String?               @unique
+  firstName        String
+  lastName         String
+  nationality      String                // ISO 3166-1 alpha-2
+  dateOfBirth      DateTime
+  placeOfBirth     String?
+  gender           Gender                @default(MALE)
+  passportNumber   String?
+  passportExpiry   DateTime?
+  emergencyContact Json?                 // { name, phone, relation }
+  status           SeafarerStatus        @default(ACTIVE)
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  createdBy        String
+  updatedBy        String
+  deletedAt        DateTime?
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  createdBy       String
-  updatedBy       String
+  // Relations
+  company          Company               @relation(fields: [companyId], references: [id])
+  certificates     SeafarerCertificate[]
+  assignments      CrewAssignment[]
+  documents        Document[]
 
-  seafarer        Seafarer  @relation(fields: [seafarerId], references: [id])
-  vessel          Vessel    @relation(fields: [vesselId], references: [id])
-
-  @@index([companyId, vesselId])
-  @@index([companyId, seafarerId])
-  @@map("crew_assignments")
+  @@index([companyId, status])
+  @@index([companyId, deletedAt])
+  @@map("seafarers")
 }
 
-model CrewContract {
-  id              String    @id @default(uuid())
-  companyId       String
-  seafarerId      String
-  contractNumber  String    @unique
-  startDate       DateTime
-  endDate         DateTime
-  rank            CrewRank
-  monthlySalary   Decimal   @db.Decimal(12, 2)
-  currency        String    @default("USD")
-  status          ContractStatus @default(ACTIVE)
-  signedAt        DateTime?
-  documentUrl     String?
+enum SeafarerCertType {
+  COC // Certificate of Competency
+  COP // Certificate of Proficiency
+  STCW_BST // Basic Safety Training
+  STCW_SCRFA // Survival Craft
+  STCW_AFF // Advanced Fire Fighting
+  STCW_MEFA // Medical First Aid
+  STCW_MEOL // Medical Care
+  STCW_GMDSS
+  STCW_TANKER_OIL
+  STCW_TANKER_CHEMICAL
+  STCW_TANKER_LNG
+  MEDICAL_CERTIFICATE
+  SEAMAN_BOOK
+  PASSPORT
+  YELLOW_FEVER
+  CUSTOM
+}
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  createdBy       String
-  updatedBy       String
+model SeafarerCertificate {
+  id                String           @id @default(uuid())
+  companyId         String
+  seafarerId        String
+  certificateType   SeafarerCertType
+  certificateNumber String?
+  issuingAuthority  String
+  issuingCountry    String
+  issueDate         DateTime
+  expiryDate        DateTime?        // Beberapa cert tidak expire (BST dasar)
+  endorsementNumber String?
+  status            CertificateStatus @default(VALID)
+  documentUrl       String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  createdBy         String
+  updatedBy         String
+  deletedAt         DateTime?
 
-  seafarer        Seafarer  @relation(fields: [seafarerId], references: [id])
+  // Relations
+  company           Company          @relation(fields: [companyId], references: [id])
+  seafarer          Seafarer         @relation(fields: [seafarerId], references: [id])
 
   @@index([companyId, seafarerId])
   @@index([companyId, status])
-  @@map("crew_contracts")
-}
-
-enum ContractStatus {
-  DRAFT
-  ACTIVE
-  COMPLETED
-  TERMINATED
+  @@index([companyId, deletedAt])
+  @@index([expiryDate])
+  @@map("seafarer_certificates")
 }
 
 enum CrewRank {
@@ -358,133 +454,36 @@ enum CrewRank {
   RADIO_OFFICER
 }
 
-// ─── CERTIFICATES ─────────────────────────────────────────────
+model CrewAssignment {
+  id               String    @id @default(uuid())
+  companyId        String
+  seafarerId       String
+  vesselId         String
+  rank             CrewRank
+  signOnDate       DateTime
+  signOffDate      DateTime?
+  signOnPort       String
+  signOffPort      String?
+  contractDuration Int       // Months
+  remarks          String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  createdBy        String
+  updatedBy        String
+  deletedAt        DateTime?
 
-model VesselCertificate {
-  id                String            @id @default(uuid())
-  companyId         String
-  vesselId          String
-  certificateType   VesselCertType
-  certificateNumber String?
-  issuingAuthority  String
-  issueDate         DateTime
-  expiryDate        DateTime
-  status            CertificateStatus @default(VALID)
-  documentUrl       String?           // Link ke MinIO/S3
-  notes             String?
-
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  createdBy         String
-  updatedBy         String
-
-  vessel            Vessel            @relation(fields: [vesselId], references: [id])
+  // Relations
+  company          Company   @relation(fields: [companyId], references: [id])
+  seafarer         Seafarer  @relation(fields: [seafarerId], references: [id])
+  vessel           Vessel    @relation(fields: [vesselId], references: [id])
 
   @@index([companyId, vesselId])
-  @@index([companyId, status])
-  @@index([expiryDate])
-  @@map("vessel_certificates")
-}
-
-enum VesselCertType {
-  SMC
-  DOC
-  ISSC
-  LOAD_LINE
-  IOPP
-  ITC
-  CSR
-  MARPOL_ANNEX_VI
-  CLASS_CERTIFICATE
-  RADIO_LICENSE
-  MINIMUM_SAFE_MANNING
-}
-
-model SeafarerCertificate {
-  id                String            @id @default(uuid())
-  companyId         String
-  seafarerId        String
-  certificateType   SeafarerCertType
-  certificateNumber String?
-  issuingAuthority  String
-  issuingCountry    String
-  issueDate         DateTime
-  expiryDate        DateTime?
-  endorsementNumber String?
-  status            CertificateStatus @default(VALID)
-  documentUrl       String?
-
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  createdBy         String
-  updatedBy         String
-
-  seafarer          Seafarer          @relation(fields: [seafarerId], references: [id])
-
   @@index([companyId, seafarerId])
-  @@index([companyId, status])
-  @@index([expiryDate])
-  @@map("seafarer_certificates")
+  @@index([companyId, deletedAt])
+  @@map("crew_assignments")
 }
 
-enum SeafarerCertType {
-  COC
-  COP
-  STCW_BST
-  STCW_SCRFA
-  STCW_AFF
-  STCW_MEFA
-  STCW_MEOL
-  STCW_GMDSS
-  STCW_TANKER_OIL
-  STCW_TANKER_CHEMICAL
-  STCW_TANKER_LNG
-  MEDICAL_CERTIFICATE
-  SEAMAN_BOOK
-  PASSPORT
-  YELLOW_FEVER
-  CUSTOM
-}
-
-enum CertificateStatus {
-  VALID
-  EXPIRING_SOON
-  CRITICAL
-  EXPIRED
-  PENDING_RENEWAL
-  SUSPENDED
-}
-
-// ─── VOYAGE MANAGEMENT ──────────────────────────────────────
-
-model Voyage {
-  id              String    @id @default(uuid())
-  companyId       String
-  vesselId        String
-  voyageNumber    String
-  status          VoyageStatus
-  departurePort   String
-  arrivalPort     String
-  departureDate   DateTime?
-  arrivalDate     DateTime?
-  cargoType       String?
-  cargoQuantity   Decimal?  @db.Decimal(12, 2)
-  cargoUnit       String?
-  chartererId     String?
-  remarks         String?
-
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  createdBy       String
-  updatedBy       String
-  deletedAt       DateTime?
-
-  vessel          Vessel    @relation(fields: [vesselId], references: [id])
-
-  @@index([companyId, vesselId])
-  @@index([companyId, status])
-  @@map("voyages")
-}
+// ─── BAGIAN 4 — Voyage Domain ─────────────────────────────────
 
 enum VoyageStatus {
   PLANNED
@@ -493,120 +492,95 @@ enum VoyageStatus {
   CANCELLED
 }
 
-// ─── TECHNICAL / MAINTENANCE ────────────────────────────────
-
-model MaintenanceJob {
-  id              String        @id @default(uuid())
+model Voyage {
+  id              String       @id @default(uuid())
   companyId       String
   vesselId        String
-  jobNumber       String        @unique
-  title           String
-  description     String?
-  maintenanceType MaintenanceType
-  priority        Priority      @default(MEDIUM)
-  status          JobStatus     @default(OPEN)
-  scheduledDate   DateTime?
-  completedDate   DateTime?
-  assignedTo      String?
-  estimatedCost   Decimal?      @db.Decimal(12, 2)
-  actualCost      Decimal?      @db.Decimal(12, 2)
-  currency        String        @default("USD")
+  voyageNumber    String
+  status          VoyageStatus
+  departurePort   String
+  destinationPort String
+  etd             DateTime
+  eta             DateTime
+  atd             DateTime?
+  ata             DateTime?
+  cargoType       String?
+  cargoQuantity   Decimal?     @db.Decimal(10, 2)
   remarks         String?
-
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
   createdBy       String
   updatedBy       String
   deletedAt       DateTime?
 
-  vessel          Vessel        @relation(fields: [vesselId], references: [id])
+  // Relations
+  company         Company      @relation(fields: [companyId], references: [id])
+  vessel          Vessel       @relation(fields: [vesselId], references: [id])
+  portCalls       PortCall[]
 
   @@index([companyId, vesselId])
   @@index([companyId, status])
-  @@map("maintenance_jobs")
+  @@index([companyId, deletedAt])
+  @@map("voyages")
 }
 
-enum MaintenanceType {
-  ROUTINE
-  DRYDOCK
-  REPAIR
-  OVERHAUL
-  SURVEY
-  EMERGENCY
+model PortCall {
+  id              String    @id @default(uuid())
+  voyageId        String
+  companyId       String
+  portName        String
+  portCode        String
+  country         String    // ISO 3166-1 alpha-2
+  eta             DateTime
+  ata             DateTime?
+  etd             DateTime
+  atd             DateTime?
+  purpose         String?
+  remarks         String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  createdBy       String
+  updatedBy       String
+  deletedAt       DateTime?
+
+  // Relations
+  company         Company   @relation(fields: [companyId], references: [id])
+  voyage          Voyage    @relation(fields: [voyageId], references: [id])
+
+  @@index([companyId, voyageId])
+  @@index([companyId, deletedAt])
+  @@map("port_calls")
 }
 
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
-enum JobStatus {
-  OPEN
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
-// ─── DOCUMENTS ───────────────────────────────────────────────
+// ─── BAGIAN 5 — Document & Audit ──────────────────────────────
 
 model Document {
-  id          String       @id @default(uuid())
-  companyId   String
-  vesselId    String?
-  documentType String       // "survey", "report", "manual"
-  title       String
-  description String?
-  fileName    String
-  fileUrl     String       // Link ke MinIO/S3
-  fileSize    Int?
-  mimeType    String?
-  tags        String[]
-  status      DocumentStatus @default(DRAFT)
+  id           String    @id @default(uuid())
+  companyId    String
+  vesselId     String?
+  seafarerId   String?
+  title        String
+  documentType String
+  fileUrl      String
+  fileSize     Int
+  mimeType     String
+  uploadedBy   String
+  expiryDate   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  createdBy    String
+  updatedBy    String
+  deletedAt    DateTime?
 
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  createdBy   String
-  updatedBy   String
-  deletedAt   DateTime?
-
-  company     Company      @relation(fields: [companyId], references: [id])
-  vessel      Vessel?      @relation(fields: [vesselId], references: [id])
+  // Relations
+  company      Company   @relation(fields: [companyId], references: [id])
+  vessel       Vessel?   @relation(fields: [vesselId], references: [id])
+  seafarer     Seafarer? @relation(fields: [seafarerId], references: [id])
 
   @@index([companyId, vesselId])
-  @@index([companyId, status])
+  @@index([companyId, seafarerId])
+  @@index([companyId, deletedAt])
   @@map("documents")
-}
-
-enum DocumentStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-// ─── AUDIT TRAIL ──────────────────────────────────────────────
-
-model AuditLog {
-  id          String      @id @default(uuid())
-  companyId   String?
-  userId      String?
-  action      AuditAction
-  resource    String      // "vessel", "seafarer", "certificate"
-  resourceId  String
-  oldValues   Json?
-  newValues   Json?
-  ipAddress   String?
-  userAgent   String?
-  requestId   String?
-  createdAt   DateTime    @default(now())
-
-  user        User?       @relation(fields: [userId], references: [id])
-
-  @@index([companyId, resource, resourceId])
-  @@index([userId])
-  @@index([createdAt])
-  @@map("audit_logs")
 }
 
 enum AuditAction {
@@ -620,4 +594,28 @@ enum AuditAction {
   IMPORT
   APPROVE
   REJECT
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  companyId  String?
+  userId     String?
+  action     AuditAction
+  resource   String      // "vessel", "seafarer", "certificate"
+  resourceId String
+  oldValues  Json?
+  newValues  Json?
+  ipAddress  String?
+  userAgent  String?
+  requestId  String?
+  createdAt  DateTime    @default(now())
+
+  // Relations
+  company    Company?    @relation(fields: [companyId], references: [id])
+  user       User?       @relation(fields: [userId], references: [id])
+
+  @@index([companyId, resource, resourceId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
 }

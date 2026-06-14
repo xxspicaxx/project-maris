@@ -5,6 +5,7 @@ import { EventEmitterModule } from "@nestjs/event-emitter";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
+import configs from "./config";
 import { CompanyModule } from "./contexts/company/company.module";
 import { DashboardModule } from "./contexts/dashboard/dashboard.module";
 import { FleetModule } from "./contexts/fleet/fleet.module";
@@ -14,6 +15,7 @@ import { PrismaService } from "./shared/database/prisma.service";
 import { GlobalExceptionFilter } from "./shared/filters/global-exception.filter";
 import { AuditInterceptor } from "./shared/interceptors/audit.interceptor";
 import { RequestIdMiddleware } from "./shared/middleware/request-id.middleware";
+import { RedisModule } from "./shared/redis/redis.module";
 import { StorageModule } from "./shared/storage/storage.module";
 
 @Module({
@@ -22,6 +24,7 @@ import { StorageModule } from "./shared/storage/storage.module";
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ".env",
+      load: configs,
     }),
 
     // Rate limiting
@@ -50,6 +53,7 @@ import { StorageModule } from "./shared/storage/storage.module";
     FleetModule,
     DashboardModule,
     StorageModule,
+    RedisModule,
   ],
   controllers: [HealthController],
   providers: [

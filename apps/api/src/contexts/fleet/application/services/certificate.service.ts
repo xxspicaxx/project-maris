@@ -72,7 +72,7 @@ export class CertificateService {
         issueDate: new Date(data.issueDate),
         expiryDate: new Date(data.expiryDate),
         documentUrl: data.documentUrl,
-        notes: data.notes,
+        // NOTE: `notes` is not yet in the schema; add it after a migration
         createdBy: userId,
         updatedBy: userId,
       },
@@ -118,9 +118,7 @@ export class CertificateService {
     if (data.documentUrl !== undefined) {
       updateData.documentUrl = data.documentUrl;
     }
-    if (data.notes !== undefined) {
-      updateData.notes = data.notes;
-    }
+    // NOTE: `notes` field is not yet in the schema; add it after a migration
     if (data.status !== undefined) {
       updateData.status = data.status as CertificateStatus;
     }

@@ -68,12 +68,16 @@ export class RoleService {
     displayName: string;
     description?: string;
     permissionIds?: string[];
+    createdBy?: string;
   }) {
+    const actor = data.createdBy ?? "SYSTEM";
     const role = await this.prisma.role.create({
       data: {
         name: data.name,
         displayName: data.displayName,
         description: data.description,
+        createdBy: actor,
+        updatedBy: actor,
         rolePermissions: data.permissionIds?.length
           ? {
               create: data.permissionIds.map((permissionId) => ({
@@ -164,13 +168,17 @@ export class RoleService {
     action: string;
     scope: "OWN" | "COMPANY" | "ALL";
     description?: string;
+    createdBy?: string;
   }) {
+    const actor = data.createdBy ?? "SYSTEM";
     return this.prisma.permission.create({
       data: {
         resource: data.resource,
         action: data.action,
         scope: data.scope,
         description: data.description,
+        createdBy: actor,
+        updatedBy: actor,
       },
     });
   }

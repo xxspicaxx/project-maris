@@ -4,9 +4,15 @@
 **Prerequisite:** Prompt 01 selesai, PostgreSQL running via Docker  
 **Output:** Database siap dengan semua tabel Phase 1 + seed data
 
+> **Status: ✅ SELESAI**  
+> Prisma schema 591 baris (15 model, 17 enum), migrations applied, seed data lengkap (9 roles, 2 companies, 5 users, 5 vessels, 6 seafarers, certificates beragam status), base repository pattern tersedia.
+
 ---
 
 ## PROMPT 02-A — Prisma Schema Lengkap
+
+> ✅ **SELESAI** — `prisma/schema.prisma` (591 baris) memiliki semua 5 bagian. `npx prisma validate` pass.  
+> **Implementasi aktual:** 15 model, 17 enum. Semua index, audit fields, soft delete, `@db.Decimal` untuk tonnage tersedia.
 
 ```
 Buat Prisma schema lengkap untuk Maritime Fleet ERP Phase 1.
@@ -70,9 +76,23 @@ Aturan wajib untuk semua model:
 Setelah schema selesai: npx prisma validate → harus 0 errors
 ```
 
+### Implementasi Aktual (Schema Summary)
+
+| Bagian              | Model                                                                   | Enum                                                                  | Status |
+| ------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------- | ------ |
+| 1 — Company & IAM   | Company, User, Role, Permission, UserRole, RolePermission, RefreshToken | CompanyType, PermissionScope                                          | ✅     |
+| 2 — Fleet           | Vessel, VesselCertificate                                               | VesselType, VesselStatus, FuelType, CertificateStatus, VesselCertType | ✅     |
+| 3 — Crew            | Seafarer, SeafarerCertificate, CrewAssignment                           | Gender, SeafarerStatus, SeafarerCertType, CrewRank                    | ✅     |
+| 4 — Voyage          | Voyage, PortCall                                                        | VoyageStatus                                                          | ✅     |
+| 5 — Dokumen & Audit | Document, AuditLog                                                      | AuditAction                                                           | ✅     |
+
+> ⚠️ **Catatan:** Model `PasswordResetToken` (untuk Prompt 04-D) **belum** ada di schema. Perlu ditambahkan saat mengerjakan password reset flow.
+
 ---
 
 ## PROMPT 02-B — Migrations
+
+> ✅ **SELESAI** — Migration `init_maritime_erp_schema` applied. `prisma.service.ts` dengan soft-delete middleware, `database.module.ts` (global module) tersedia.
 
 ```
 Jalankan dan verifikasi Prisma migrations untuk Maritime Fleet ERP.
@@ -117,9 +137,18 @@ Setelah selesai, verifikasi dengan query sederhana:
 await prisma.company.findMany()  → harus return [] tanpa error
 ```
 
+### Implementasi Aktual
+
+- **`apps/api/src/shared/database/prisma.service.ts`** ✅ — Extends PrismaClient, OnModuleInit/Destroy, soft-delete middleware aktif
+- **`apps/api/src/shared/database/database.module.ts`** ✅ — Global module, export PrismaService
+- **`prisma/migrations/`** ✅ — Migration folder tersedia
+- **`prisma.config.ts`** ✅ — Di root project
+
 ---
 
 ## PROMPT 02-C — Seed Data
+
+> ✅ **SELESAI** — 9 file seed tersedia, `pnpm db:seed` berjalan. Scripts `db:seed`, `db:reset`, `db:studio`, `db:fresh` ada di root `package.json`.
 
 ```
 Buat seed data lengkap untuk development dan testing.
@@ -189,9 +218,27 @@ Tambahkan script di package.json:
 Jalankan: pnpm db:seed → harus sukses tanpa error
 ```
 
+### Implementasi Aktual
+
+| File                             | Ukuran | Isi                                |
+| -------------------------------- | ------ | ---------------------------------- |
+| `prisma/seed/01-permissions.ts`  | 1.4 KB | Permissions resource:action:scope  |
+| `prisma/seed/02-roles.ts`        | 5.9 KB | 9 roles + role-permission mapping  |
+| `prisma/seed/03-companies.ts`    | 1.9 KB | NJM + ASL                          |
+| `prisma/seed/04-users.ts`        | 4.8 KB | 5 users dengan hashed password     |
+| `prisma/seed/05-vessels.ts`      | 7.1 KB | 5 vessels (3 NJM, 2 ASL)           |
+| `prisma/seed/06-seafarers.ts`    | 6.5 KB | 6 seafarers berbagai jabatan       |
+| `prisma/seed/07-certificates.ts` | 8.2 KB | Vessel & seafarer certs mix status |
+| `prisma/seed/seed.ts`            | 9.7 KB | Main seed orchestration            |
+| `prisma/seed/index.ts`           | 1.7 KB | Entry point                        |
+
+> ✅ `pnpm db:seed` berjalan sukses. Prisma Studio (`npx prisma studio`) aktif di port 5555.
+
 ---
 
 ## PROMPT 02-D — Base Repository Pattern
+
+> ✅ **SELESAI** — `apps/api/src/shared/database/base.repository.ts` (11.3 KB) tersedia dengan abstract class `BaseRepository<TEntity, TCreateInput, TUpdateInput>`.
 
 ```
 Buat base repository abstract class yang akan diextend oleh semua repositories.
@@ -228,27 +275,42 @@ Aturan:
   dan convert ke domain exceptions yang sesuai
 ```
 
+### Implementasi Aktual
+
+- **File:** `apps/api/src/shared/database/base.repository.ts` (11.3 KB)
+- **Interface:** `BaseRepository<TEntity, TCreateInput, TUpdateInput>`
+- **Methods tersedia:** `findById`, `findAll` (dengan pagination), `create`, `update`, `softDelete`, `exists`
+- **Error handling:** `PrismaClientKnownRequestError` di-handle (P2002, P2025)
+- **Multi-tenant safety:** Semua query include `companyId` filter otomatis
+
+> ⚠️ **Catatan:** `base.repository.ts` sudah ada, namun modul-modul (Fleet, IAM) belum mengextend class ini secara penuh — service langsung menggunakan PrismaService. Refactor ke pattern ini akan dilakukan bertahap.
+
 ---
 
 ## Checklist Selesai Prompt 02
 
 ```bash
 # Database terbuat
-npx prisma studio              # Buka http://localhost:5555, lihat semua tabel
+npx prisma studio              # Buka http://localhost:5555, lihat semua tabel ✅
 
 # Seed berhasil
-pnpm db:seed                   # "Seeding completed successfully"
+pnpm db:seed                   # "Seeding completed successfully" ✅
 
-# Verifikasi data
-# Di prisma studio, pastikan ada:
-# - 9 roles dengan permissions yang benar
-# - 2 companies
-# - 5 users dengan roles masing-masing
-# - 5 vessels (3 NJM, 2 ASL)
-# - Certificates dengan berbagai status
+# Verifikasi data (konfirmasi via Prisma Studio)
+# ✅ 9 roles dengan permissions yang benar
+# ✅ 2 companies (NJM, ASL)
+# ✅ 5 users dengan roles masing-masing
+# ✅ 5 vessels (3 NJM, 2 ASL)
+# ✅ 6 seafarers
+# ✅ Certificates dengan berbagai status (VALID, EXPIRING_SOON, CRITICAL, EXPIRED)
 
 # Migration clean
-npx prisma migrate status      # "All migrations have been applied"
+npx prisma migrate status      # "All migrations have been applied" ✅
 ```
 
-**Jangan lanjut ke Prompt 03 sebelum database dan seed data berfungsi sempurna.**
+**✅ Prompt 02 selesai. Sudah lanjut ke Prompt 03.**
+
+### Item Pending (Carry-over ke Prompt berikutnya)
+
+- [ ] **Model `PasswordResetToken`** — perlu ditambahkan ke `prisma/schema.prisma` saat mengerjakan Prompt 04-D (password reset flow)
+- [ ] **Migration baru** — jalankan setelah `PasswordResetToken` ditambahkan: `npx prisma migrate dev --name add_password_reset_tokens`

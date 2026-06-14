@@ -4,9 +4,14 @@
 **Prerequisite:** Prompt 02 selesai, database running dengan seed data  
 **Output:** NestJS app berjalan dengan semua shared infrastructure siap
 
+> **Status: ⚠️ SEBAGIAN SELESAI**  
+> Bootstrap NestJS (`main.ts`, `app.module.ts`), global guard, filter, audit interceptor, decorators, storage service ada. **Yang belum:** `logging.interceptor.ts`, `transform.interceptor.ts`, `parse-uuid.pipe.ts`, `pagination-query.pipe.ts`, `public.decorator.ts`, `api-paginated-response.decorator.ts`, `audit.service.ts`, `notification.service.ts`, `api-response.helper.ts`, `password.util.ts`, `jwt.util.ts`, config module (folder config kosong), health service detail.
+
 ---
 
 ## PROMPT 03-A — NestJS Bootstrap & Global Setup
+
+> ✅ **SELESAI** — `main.ts` dengan helmet, compression, CORS, ValidationPipe, GlobalExceptionFilter, RequestId interceptor, Swagger, rate limiting, health endpoint, prefix `api/v1` tersedia. `app.module.ts` dengan semua modul ada.
 
 ```
 Setup NestJS application bootstrap untuk Maritime Fleet ERP.
@@ -81,6 +86,9 @@ JWT_REFRESH_EXPIRES, REDIS_URL (semua wajib kecuali yang optional)
 ---
 
 ## PROMPT 03-B — Shared Infrastructure
+
+> ⚠️ **SEBAGIAN** — Tersedia: `jwt-auth.guard.ts`, `rbac.guard.ts`, `company-isolation.guard.ts`, `audit.interceptor.ts`, `global-exception.filter.ts`, `current-user.decorator.ts`, `permissions.decorator.ts`, `audit.decorator.ts`, `winston.config.ts`, `storage.service.ts`.  
+> **Belum ada:** `logging.interceptor.ts`, `transform.interceptor.ts`, `optional-auth.guard.ts`, `parse-uuid.pipe.ts`, `pagination-query.pipe.ts`, `public.decorator.ts`, `api-paginated-response.decorator.ts`, `audit.service.ts`, `notification.service.ts`, `api-response.helper.ts`, `password.util.ts`, `jwt.util.ts`.
 
 ```
 Buat semua shared infrastructure yang akan digunakan oleh semua modules.
@@ -194,6 +202,8 @@ Setelah selesai, pastikan:
 
 ## PROMPT 03-C — Config Module
 
+> ❌ **BELUM SELESAI** — Folder `apps/api/src/config/` kosong. Config classes (`AppConfig`, `DatabaseConfig`, `JwtConfig`, `RedisConfig`, `StorageConfig`, `MailConfig`) belum dibuat.
+
 ```
 Buat configuration management yang type-safe untuk NestJS.
 Baca docs/ai-rules/03-tech-stack.md section 3.8 untuk env vars yang diperlukan.
@@ -266,6 +276,8 @@ export default () => ({
 
 ## PROMPT 03-D — Storage & File Service
 
+> ✅ **SELESAI** — `storage.service.ts` (MinIO) dan `storage.module.ts` ada di `apps/api/src/shared/storage/`.
+
 ```
 Buat file storage service menggunakan MinIO (S3-compatible).
 Baca docs/ai-rules/07-database-schema.md untuk document model.
@@ -313,6 +325,8 @@ async upload(@UploadedFile() file: Express.Multer.File) {
 ---
 
 ## PROMPT 03-E — Health & Monitoring
+
+> ⚠️ **SEBAGIAN** — `health.controller.ts` di-register di `app.module.ts`, endpoint `GET /health` tersedia. **Belum ada:** `health.service.ts` dengan `checkDatabase()`, `checkRedis()`, `checkStorage()`. Saat ini hanya single endpoint sederhana.
 
 ```
 Buat health check endpoint yang komprehensif.

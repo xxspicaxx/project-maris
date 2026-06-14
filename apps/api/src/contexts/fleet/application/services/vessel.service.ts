@@ -92,7 +92,7 @@ export class VesselService {
           select: {
             crewAssignments: true,
             voyages: true,
-            maintenanceJobs: true,
+            // NOTE: `maintenanceJobs` relation not yet in schema
           },
         },
       },
@@ -274,12 +274,12 @@ export class VesselService {
         vesselId,
         documentType: data.documentType,
         title: data.title,
-        description: data.description,
-        fileName: data.fileName,
+        // NOTE: `description` field is not yet in the Document schema
         fileUrl: data.fileUrl,
         fileSize: data.fileSize,
         mimeType: data.mimeType,
-        status: "PUBLISHED",
+        // NOTE: `fileName` and `status` are not in the Document schema
+        uploadedBy: userId,
         createdBy: userId,
         updatedBy: userId,
       },

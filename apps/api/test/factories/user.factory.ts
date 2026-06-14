@@ -14,6 +14,8 @@ export function createMockUser(overrides?: Partial<User>): User {
     lastLoginAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
+    createdBy: "SYSTEM",
+    updatedBy: "SYSTEM",
     deletedAt: null,
     ...overrides,
   };
@@ -27,6 +29,10 @@ export function createMockRole(overrides?: Partial<Role>): Role {
     description: "Manager for fleet operations",
     isSystem: true,
     createdAt: new Date(),
+    updatedAt: new Date(),
+    createdBy: "SYSTEM",
+    updatedBy: "SYSTEM",
+    deletedAt: null,
     ...overrides,
   };
 }
@@ -41,8 +47,10 @@ export function createMockUserRole(
     userId,
     roleId,
     vesselId: null,
-    assignedAt: new Date(),
-    assignedBy: uuidv4(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdBy: uuidv4(),
+    updatedBy: uuidv4(),
     ...overrides,
   };
 }

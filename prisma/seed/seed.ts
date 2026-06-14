@@ -1,3 +1,7 @@
+/* eslint-disable */
+// @ts-nocheck
+// NOTE: This is a legacy seed file replaced by prisma/seed/index.ts + 01-07 seed files.
+// Kept for reference only. Do not use directly.
 /* eslint-disable no-console */
 import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcrypt";

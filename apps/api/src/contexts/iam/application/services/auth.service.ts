@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { ForbiddenException, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
@@ -51,6 +51,8 @@ export class AuthService {
         lastName: data.lastName,
         phone: data.phone,
         companyId: data.companyId,
+        createdBy: "SYSTEM",
+        updatedBy: "SYSTEM",
       },
     });
 
@@ -60,7 +62,8 @@ export class AuthService {
         data: {
           userId: user.id,
           roleId: data.roleId,
-          assignedBy: user.id,
+          createdBy: user.id,
+          updatedBy: user.id,
         },
       });
     }
@@ -100,6 +103,9 @@ export class AuthService {
     });
 
     if (!user) {
+      await this.prisma.loginAttempt.create({
+        data: { email, isSuccess: false },
+      });
       throw new InvalidCredentialsException();
     }
 
@@ -107,11 +113,35 @@ export class AuthService {
       throw new AccountDisabledException();
     }
 
+    // Check account lockout
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+    const failedAttempts = await this.prisma.loginAttempt.count({
+      where: {
+        email,
+        isSuccess: false,
+        createdAt: { gte: fifteenMinutesAgo },
+      },
+    });
+
+    if (failedAttempts >= 5) {
+      throw new ForbiddenException(
+        "Account temporarily locked due to multiple failed login attempts.",
+      );
+    }
+
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
+      await this.prisma.loginAttempt.create({
+        data: { email, isSuccess: false },
+      });
       throw new InvalidCredentialsException();
     }
+
+    // Log successful login
+    await this.prisma.loginAttempt.create({
+      data: { email, isSuccess: true },
+    });
 
     // Get roles and permissions
     const roles = user.userRoles.map((ur) => ur.role.name);
@@ -382,60 +412,55 @@ export class AuthService {
       return;
     }
 
-    const secret =
-      this.configService.get<string>("JWT_ACCESS_SECRET", "maritime-fleet-erp-secret") +
-      user.passwordHash;
+    // Generate a secure token
+    const token = await bcrypt.hash(user.id + Date.now().toString(), 10);
+    const tokenStr = Buffer.from(token).toString("base64url");
 
-    const token = this.jwtService.sign(
-      { sub: user.id, email: user.email, type: "password-reset" },
-      { expiresIn: "15m", secret },
-    );
+    await this.prisma.passwordResetToken.create({
+      data: {
+        userId: user.id,
+        token: tokenStr,
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
+      },
+    });
 
-    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+    const resetLink = `http://localhost:3000/reset-password?token=${tokenStr}`;
     this.logger.log(`\n==================================================\n`);
     this.logger.log(`[PASSWORD RESET LINK FOR ${user.email}]:\n${resetLink}`);
     this.logger.log(`\n==================================================\n`);
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
-    const decoded = this.jwtService.decode(token) as {
-      sub: string;
-      email: string;
-      type: string;
-    } | null;
-    if (!decoded || decoded.type !== "password-reset") {
-      throw new InvalidCredentialsException();
-    }
-
-    const user = await this.prisma.user.findUnique({
-      where: { id: decoded.sub },
+    const resetToken = await this.prisma.passwordResetToken.findUnique({
+      where: { token },
+      include: { user: true },
     });
 
-    if (!user || !user.isActive) {
-      throw new UserNotFoundException(decoded.sub);
+    if (!resetToken || resetToken.expiresAt < new Date()) {
+      throw new InvalidCredentialsException();
     }
 
-    const secret =
-      this.configService.get<string>("JWT_ACCESS_SECRET", "maritime-fleet-erp-secret") +
-      user.passwordHash;
+    const user = resetToken.user;
 
-    try {
-      this.jwtService.verify(token, { secret });
-    } catch {
-      throw new InvalidCredentialsException();
+    if (!user || !user.isActive) {
+      throw new UserNotFoundException(user?.id || "");
     }
 
     const passwordHash = await bcrypt.hash(newPassword, 12);
 
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { passwordHash },
-    });
-
-    await this.prisma.refreshToken.updateMany({
-      where: { userId: user.id, revokedAt: null },
-      data: { revokedAt: new Date() },
-    });
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: user.id },
+        data: { passwordHash },
+      }),
+      this.prisma.passwordResetToken.delete({
+        where: { id: resetToken.id },
+      }),
+      this.prisma.refreshToken.updateMany({
+        where: { userId: user.id, revokedAt: null },
+        data: { revokedAt: new Date() },
+      }),
+    ]);
 
     this.logger.log(`Password reset successfully for user: ${user.email}`);
   }

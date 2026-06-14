@@ -4,9 +4,14 @@
 **Prerequisite:** Prompt 05 selesai, API berjalan di localhost:4000  
 **Output:** ERP shell berfungsi, login bekerja, navigasi siap
 
+> **Status: ⚠️ SEBAGIAN SELESAI**  
+> ERP shell layout ada (sidebar.tsx, topbar.tsx, dashboard layout). Auth store, UI store (Zustand), API client (axios), fleet.service.ts, auth.service.ts, React Query hooks (use-vessels, use-auth, use-dashboard) ada. **Yang belum:** Design system components (ErpDataTable, KpiCard, InfoPanel, StatusBadge, dll di `components/`), auth pages (login, forgot-password, reset-password), Next.js middleware (route protection), 404/403 pages, Storybook.
+
 ---
 
 ## PROMPT 06-A — Next.js App Setup & ERP Shell Layout
+
+> ✅ **SELESAI** — Root layout, auth layout, dashboard layout tersedia. `Sidebar.tsx` dengan nav items & collapse, `TopBar.tsx`, globals.css dengan CSS variables ada.
 
 ```
 Setup Next.js 14 App Router untuk Maritime Fleet ERP.
@@ -115,6 +120,8 @@ BUKAN consumer app. BUKAN startup dashboard. Enterprise ERP untuk profesional ma
 ---
 
 ## PROMPT 06-B — Design System Components
+
+> ❌ **BELUM SELESAI** — `apps/web/src/components/` hanya memiliki subfolder `layout/`. Belum ada: `ErpDataTable`, `KpiCard`, `InfoPanel`, `StatusBadge`, `CertificateExpiryBar`, form components, feedback components (AlertBanner, EmptyState), PageHeader, TabNav. Storybook belum disetup.
 
 ```
 Buat komponen UI design system yang akan digunakan di seluruh aplikasi.
@@ -261,6 +268,8 @@ Jalankan: pnpm storybook → semua komponen visible dan interaktif.
 
 ## PROMPT 06-C — API Client & Data Fetching
 
+> ✅ **SELESAI** — `apps/web/src/services/api.client.ts` (Axios + interceptors), `fleet.service.ts`, `auth.service.ts`, `dashboard.service.ts`. Hooks: `use-vessels.ts`, `use-auth.ts`, `use-dashboard.ts`. Stores: `auth.store.ts` (Zustand), `ui.store.ts`. `apps/web/src/lib/utils.ts` ada.
+
 ```
 Setup API client dan data fetching layer untuk Next.js.
 Baca docs/ai-rules/06-api-design.md untuk format response yang diharapkan.
@@ -382,6 +391,8 @@ Baca docs/ai-rules/13-error-handling.md untuk error handling di frontend.
 ---
 
 ## PROMPT 06-D — Auth Pages & Route Protection
+
+> ❌ **BELUM SELESAI** — `apps/web/src/app/(auth)/login/` kosong (hanya ada folder). Belum ada: halaman login, forgot-password, reset-password, Next.js `middleware.ts`, halaman 403, halaman 404.
 
 ```
 Buat auth pages dan middleware untuk route protection.

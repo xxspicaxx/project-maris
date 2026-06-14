@@ -38,6 +38,15 @@ describe("AuthService", () => {
     role: {
       findUnique: jest.fn(),
     },
+    loginAttempt: {
+      create: jest.fn(),
+      count: jest.fn().mockResolvedValue(0),
+    },
+    passwordResetToken: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+      delete: jest.fn(),
+    },
   };
 
   const mockJwtService = {
@@ -125,7 +134,8 @@ describe("AuthService", () => {
         data: {
           userId: mockUser.id,
           roleId,
-          assignedBy: mockUser.id,
+          createdBy: mockUser.id,
+          updatedBy: mockUser.id,
         },
       });
     });

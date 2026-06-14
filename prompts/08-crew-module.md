@@ -4,6 +4,9 @@
 **Prerequisite:** Prompt 07 selesai  
 **Output:** Crew module dengan full STCW compliance validation
 
+> **Status: 🟦 BELUM DIMULAI**  
+> Ini adalah prioritas utama Phase 2 yang belum dikerjakan. Tidak ada file di `apps/api/src/contexts/crew/` maupun halaman crew di frontend.
+
 ---
 
 ## PROMPT 08-A — Crew Domain Layer

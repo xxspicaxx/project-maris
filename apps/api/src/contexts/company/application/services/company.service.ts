@@ -82,6 +82,9 @@ export class CompanyService {
         email: data.email,
         phone: data.phone,
         taxId: data.taxId,
+        // Audit fields — SYSTEM as actor since this is an admin operation
+        createdBy: "SYSTEM",
+        updatedBy: "SYSTEM",
       },
     });
   }
@@ -140,56 +143,58 @@ export class CompanyService {
     });
   }
 
-  async getSettings(companyId: string) {
+  /**
+   * Returns company settings.
+   *
+   * NOTE: The Company schema currently does not have a `settings` Json column.
+   * This method returns hardcoded defaults until the column is added via a
+   * schema migration and `createdBy`/`updatedBy` are sourced from the JWT.
+   */
+  async getSettings(companyId: string): Promise<Record<string, unknown>> {
     const company = await this.prisma.company.findUnique({
       where: { id: companyId },
-      select: { settings: true },
+      select: { id: true },
     });
 
     if (!company) {
       throw new CompanyNotFoundException(companyId);
     }
 
-    const defaultSettings = {
+    return {
+      timezone: "Asia/Jakarta",
+      currency: "IDR",
+      language: "id",
+    };
+  }
+
+  /**
+   * Updates company settings.
+   *
+   * NOTE: The Company schema currently does not have a `settings` Json column.
+   * This is a no-op stub that returns the default settings until the column
+   * is added via a schema migration.
+   */
+  async updateSettings(
+    companyId: string,
+    settingsData: { timezone?: string; currency?: string; language?: string },
+  ): Promise<Record<string, unknown>> {
+    const company = await this.prisma.company.findUnique({
+      where: { id: companyId },
+      select: { id: true },
+    });
+
+    if (!company) {
+      throw new CompanyNotFoundException(companyId);
+    }
+
+    // TODO: persist settings once a `settings Json?` column is added to the
+    // Company model and a migration is applied.
+    const defaultSettings: Record<string, unknown> = {
       timezone: "Asia/Jakarta",
       currency: "IDR",
       language: "id",
     };
 
-    return {
-      ...defaultSettings,
-      ...((company.settings as Record<string, unknown>) || {}),
-    };
-  }
-
-  async updateSettings(
-    companyId: string,
-    settingsData: { timezone?: string; currency?: string; language?: string },
-  ) {
-    const company = await this.prisma.company.findUnique({
-      where: { id: companyId },
-    });
-
-    if (!company) {
-      throw new CompanyNotFoundException(companyId);
-    }
-
-    const currentSettings = (company.settings as Record<string, unknown>) || {};
-    const updatedSettings = {
-      ...currentSettings,
-      ...settingsData,
-    };
-
-    return this.prisma.company.update({
-      where: { id: companyId },
-      data: {
-        settings: updatedSettings,
-      },
-      select: {
-        id: true,
-        name: true,
-        settings: true,
-      },
-    });
+    return { ...defaultSettings, ...settingsData };
   }
 }

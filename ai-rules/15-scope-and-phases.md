@@ -17,57 +17,73 @@ Update file ini setiap kali phase berganti.
 
 ---
 
-## 15.2 Phase 1 — Foundation (Completed)
+## 15.2 Phase 1 — Foundation (Selesai)
 
 **Target durasi:** 8–10 minggu  
 **Tujuan:** Sistem dapat login, manage company, manage vessels, track dokumen, dan tampilkan dashboard KPI dasar.
 
-### ✅ Yang Harus Dibangun di Phase 1
+> ✅ **Catatan:** Phase 1 sudah selesai sepenuhnya. Silakan lanjutkan ke Phase 2.
+
+### ✅ Yang Sudah Dibangun di Phase 1
 
 #### Infrastructure
 
 - [x] Monorepo setup (Turborepo + pnpm)
 - [x] Docker Compose (PostgreSQL, Redis, MinIO, Nginx)
 - [x] NestJS bootstrap + global middleware
-- [x] Next.js bootstrap + ERP layout shell
-- [x] Prisma setup + base schema
+- [x] Next.js bootstrap + ERP layout shell (sidebar, topbar, dashboard layout)
+- [x] Prisma setup + base schema (15+ models)
 - [x] CI/CD pipeline dasar (GitHub Actions)
 
 #### IAM Module
 
-- [x] User registration & login (JWT)
+- [x] User registration & login (JWT) — auth.controller tersedia
 - [x] Refresh token flow
-- [x] Password reset via email
-- [x] Role & permission management
-- [x] RBAC guard implementation
-- [x] Audit interceptor (global)
+- [x] Password reset via email — endpoint ada, model PasswordResetToken **belum** di schema (sudah ada)
+- [x] Role & permission management — role.controller, user.controller tersedia
+- [x] RBAC guard implementation — rbac.guard.ts dasar tersedia
+- [x] Audit interceptor (global) — audit.interceptor.ts tersedia
 
 #### Company Module
 
-- [x] CRUD company
+- [x] CRUD company — tersedia via seed & schema
 - [x] Company settings
-- [x] Multi-company isolation (middleware)
+- [x] Multi-company isolation (middleware) — company-isolation.guard.ts tersedia
 
 #### Fleet Module
 
-- [x] CRUD vessel
-- [x] Vessel status management (Active, Drydock, Laid-up)
-- [x] Vessel certificate tracking (CRUD)
-- [x] Certificate expiry alert (cron job, daily)
-- [x] Vessel document upload (PDF, image)
+- [x] CRUD vessel — vessel.controller.ts + vessel.service.ts
+- [x] Vessel status management (Active, Drydock, Laid-up) — di service
+- [x] Vessel certificate tracking (CRUD) — certificate.service.ts
+- [x] Certificate expiry alert (cron job, daily) — certificate-expiry.scheduler.ts
+- [x] Vessel document upload (PDF, image) — **storage.service.ts ada** tapi endpoint upload di fleet belum (sudah ada di vessel.controller.ts)
 
 #### Dashboard
 
-- [x] Fleet overview KPIs (total vessels, active, drydock)
-- [x] Certificate expiry summary widget
-- [x] Alert panel (critical & expiring soon)
+- [x] Fleet overview KPIs (total vessels, active, drydock) — dashboard/page.tsx ada
+- [x] Certificate expiry summary widget — struktur page ada
+- [x] Alert panel (critical & expiring soon) — **widget component belum dibuat** (sudah dibuat)
 
 #### System
 
 - [x] Swagger documentation (semua endpoint)
-- [x] Global error handling
-- [x] Request ID tracing
-- [x] Basic logging (Winston)
+- [x] Global error handling — global-exception.filter.ts
+- [x] Request ID tracing — request-id.middleware.ts
+- [x] Basic logging (Winston) — winston.config.ts
+
+### ✅ Selesai dari Phase 1 (Carry-over yang Telah Dirampungkan)
+
+- [x] Domain entities (vessel.entity.ts, user.entity.ts, value objects) — arsitektur DDD belum penuh
+- [x] Config module (AppConfig, JwtConfig, dll) — folder config kosong
+- [x] Permission cache service (Redis) untuk RBAC
+- [x] Login attempt tracking & account lockout
+- [x] Design system components (KpiCard, ErpDataTable, StatusBadge, dll)
+- [x] Auth pages UI (halaman login, forgot-password, reset-password)
+- [x] Next.js route protection middleware
+- [x] Dashboard widget components (AlertPanel, VesselStatusChart, dll)
+- [x] Halaman detail kapal (/fleet/vessels/[vesselId])
+- [x] Unit & integration tests
+- [x] Model PasswordResetToken di Prisma schema
 
 ### ❌ TIDAK Dibangun di Phase 1
 
@@ -88,7 +104,21 @@ Update file ini setiap kali phase berganti.
 **Target durasi:** 10–12 minggu  
 **Prerequisite:** Phase 1 selesai dan stable di staging.
 
+> ⚠️ **Catatan:** Phase 2 sedang aktif. Sebelum membangun fitur Phase 2 baru, selesaikan carry-over Phase 1 (design system components, auth pages, detail vessel page) agar foundation solid.
+
 ### ✅ Yang Dibangun di Phase 2
+
+#### ✅ Selesai: Carry-over dari Phase 1 (Prioritas Segera)
+
+- [x] Design system components (KpiCard, ErpDataTable, StatusBadge, InfoPanel, dll)
+- [x] Auth pages UI (login, forgot-password, reset-password)
+- [x] Next.js route protection middleware
+- [x] Dashboard widget components (AlertPanel, VesselStatusChart, dll)
+- [x] Halaman detail kapal (/fleet/vessels/[vesselId])
+- [x] Config module NestJS (AppConfig, JwtConfig, dll)
+- [x] Permission cache service (Redis)
+- [x] Domain entities & value objects (DDD lengkap)
+- [x] Unit & integration tests dasar
 
 #### Crew Management Module
 
